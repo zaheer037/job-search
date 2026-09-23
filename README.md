@@ -199,9 +199,62 @@ This runs the full workflow: evaluate fit, draft CV + cover letter, review with 
 
 Postings are treated as untrusted input (the workflow follows no instructions embedded in them and fetches no links from their body), but agentic defenses are instruction-level, not a sandbox - on an unfamiliar job board, skim what was fetched and written before you hit send. Details in [SECURITY.md](SECURITY.md).
 
+## Your market
+
+The workflow — fit scoring, CV tailoring, cover letters, interview prep, tracking — is
+country- and language-agnostic. Only the **job boards** are market-specific, and `/setup`
+asks which ones fit your market before enabling anything.
+
+| Portal | Coverage | Ships as |
+|---|---|---|
+| `linkedin-search` | **any country**; you pass `--location "Bengaluru, Karnataka, India"`, `"Berlin, Germany"`, `"Remote"` | enabled |
+| `freehire-search` | **many markets**, tech/software/data roles; `--region apac\|eu\|us\|latam\|cis`, `--country IN,DE,GB` | enabled |
+| `jobindex`, `jobnet`, `jobbank`, `jobdanmark` | Denmark | **disabled** — worked examples of the portal pattern; `/setup` enables them only if your market is Denmark |
+
+So a new user anywhere starts with two working portals, not zero.
+
+**For a board that isn't shipped** — Naukri, Instahyre, Indeed, Seek, StepStone — run
+[`/add-portal`](#other-commands). It investigates the board, scaffolds a CLI with the same
+contract as the shipped ones, and test-runs a live query before registering it. `/scrape`
+auto-discovers whatever is installed; nothing to wire up. This is usually the highest-value
+thing to do right after `/setup`.
+
+**Language.** CVs default to English; `/setup` asks if your market expects otherwise. Cover
+letters always match the posting's language automatically. The Language Gate in
+`04-job-evaluation.md` hard-rejects a posting requiring a language you haven't declared, and
+flags — rather than drops — one asking for a higher level than you claim.
+
+**Salary benchmarking is bring-your-own-data** in every market, Denmark included.
+`salary_lookup.py` reads a `salary_data.json` you build from whatever source you trust —
+union statistics, a Glassdoor or levels.fyi export, numbers you collected yourself. See
+[tools/README_SALARY_TOOL.md](tools/README_SALARY_TOOL.md).
+
 ## Other commands
 
-`/setup`, `/scrape`, and `/apply` form the core workflow. Ten more commands extend it once your profile is in place:
+`/setup`, `/scrape`, and `/apply` form the core workflow. At a glance:
+
+| When | Command | What it does |
+|---|---|---|
+| **Once, first** | `/setup` | Builds your profile. Nothing else works until this has run. |
+| Once, optional | `/expand` | Mines GitHub, portfolio, course syllabi for skills your CV doesn't spell out |
+| Once, per market | `/add-portal` | Adds a job board the repo doesn't ship |
+| Once, optional | `/add-template` | Registers your own CV/cover-letter design |
+| **Every cycle** | `/scrape` → `/rank` → `/apply <url>` | Find → triage cheaply → apply properly |
+| After applying | `/outcome` | Log interviews, offers, rejections, silence; draft follow-ups |
+| Before an interview | `/interview` | Stage-specific prep pack + optional mock interview |
+| Whenever | `/gmail-sync` | Detect status changes from your inbox |
+| Periodically | `/upskill` | Skill gaps across tracked jobs + a learning plan |
+| Periodically | `/html-report`, `/notion-sync` | Offline dashboard; live Notion view |
+| Starting over | `/reset` | Wipes profile data. Destructive — never auto-triggers |
+
+Run `/rank` on every scrape: it scores from posting text alone, so it is cheap. Spend
+`/apply` — which adds company research, drafting and PDF verification — only on what
+survives it.
+
+The `*-search` skills and `/job-application-assistant` are invoked by `/scrape` and
+`/apply`; you don't call them directly.
+
+Ten commands extend the core workflow once your profile is in place:
 
 - **`/interview`** preps you for a scheduled interview on a tracked application. It builds a stage-specific prep pack from the application's archive (the exact posting, the CV and cover letter the interviewer actually read, feedback recorded from earlier rounds), researches the company and interviewers with a verify-before-use rule, maps likely questions to your STAR examples, and offers a mock interview following the roleplay protocol in `07-interview-prep.md`. Gaps get honest bridge answers, never invented experience.
 - **`/outcome`** records what happened to an application - interview stages, offers, rejections, silence. It archives the submitted CV, cover letter, and posting text into `documents/applications/<company>_<role>/`, keeps `outcome.md` in the format `/setup` Path A parses, and updates the tracker. It also owns the stretch before there is an outcome to record: `/outcome followup` surfaces open applications that have gone quiet (default 10 days), drafts a short channel-appropriate follow-up in your writing style using only claims from the materials you already submitted (drafts only, never sends; at most twice per application), and offers a thank-you note in the same turn an interview stage is recorded. Once a few applications resolve, it points you back to `/setup` to calibrate the fit framework from what actually got interviews.

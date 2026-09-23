@@ -139,8 +139,9 @@ jobs:
       - name: Install apt-packaged TeX Live (bookworm leg)
         if: matrix.leg.name == 'debian-bookworm'
         # --no-install-recommends keeps the leg lean, so the two font packages
-        # must then be named explicitly: moderncv loads fontawesome5, which apt
-        # ships in texlive-fonts-extra (lualatex dies fatally without it), and
+        # must then be named explicitly: moderncv loads fontawesome (fontawesome6
+        # on current TeX Live, fontawesome5 on older moderncv), which apt ships in
+        # texlive-fonts-extra (lualatex dies fatally without it), and
         # hyperref's xetex driver probes the pzdr metrics from
         # texlive-fonts-recommended (the cover letter fails without it).
         run: |
