@@ -45,11 +45,11 @@ class LinterRepoFixture(unittest.TestCase):
             encoding="utf-8",
         )
 
-        command = self.root / ".claude" / "commands" / "setup.md"
-        command.parent.mkdir(parents=True)
-        command.write_text("# /setup - Test setup command\n", encoding="utf-8")
-
-        skill = self.root / ".claude" / "skills" / "example" / "SKILL.md"
+        # Skills are canonical under .agents/skills/ - the portable Agent Skills
+        # location every runtime reads. The fixture carries no AGENTS.md, so the
+        # linter's projection check stays inert here and these tests keep
+        # exercising check_skill()/check_settings() in isolation.
+        skill = self.root / ".agents" / "skills" / "example" / "SKILL.md"
         skill.parent.mkdir(parents=True)
         skill.write_text(
             "---\nname: example\ndescription: Example skill\n---\n",
@@ -57,6 +57,7 @@ class LinterRepoFixture(unittest.TestCase):
         )
 
         self.settings = self.root / ".claude" / "settings.json"
+        self.settings.parent.mkdir(parents=True, exist_ok=True)
         self.write_settings({"permissions": {"allow": []}})
 
     def write_settings(self, data):
@@ -111,14 +112,15 @@ class SettingsShapeTests(LinterRepoFixture):
                 self.assertEqual(result.returncode, 1)
                 self.assertIn("expected permissions.allow to be a list", result.stdout)
                 self.assertNotIn("Traceback", result.stderr)
-class SkillAndCommandCheckTests(LinterRepoFixture):
-    """check_skill()/check_command() are the linter's main job and were
-    previously untested - only check_settings() had coverage, so deleting
-    e.g. the missing-allowed-tools error survived the whole suite (review
-    finding F23, 2026-08-19)."""
+class SkillCheckTests(LinterRepoFixture):
+    """check_skill() is the linter's main job and was previously untested -
+    only check_settings() had coverage, so deleting e.g. the
+    missing-allowed-tools error survived the whole suite (review finding F23,
+    2026-08-19)."""
 
-    def write_skill(self, frontmatter: str):
-        skill = self.root / ".claude" / "skills" / "example" / "SKILL.md"
+    def write_skill(self, frontmatter: str, directory: str = "example"):
+        skill = self.root / ".agents" / "skills" / directory / "SKILL.md"
+        skill.parent.mkdir(parents=True, exist_ok=True)
         skill.write_text(frontmatter, encoding="utf-8")
 
     def test_allowed_tools_referencing_a_missing_file_fails(self):
@@ -126,7 +128,7 @@ class SkillAndCommandCheckTests(LinterRepoFixture):
             "---\n"
             "name: example\n"
             "description: Example skill\n"
-            "allowed-tools: Bash(bun run .claude/skills/example/DOES_NOT_EXIST.ts *)\n"
+            "allowed-tools: Bash(bun run .agents/skills/example/DOES_NOT_EXIST.ts *)\n"
             "---\n"
         )
 
@@ -137,13 +139,13 @@ class SkillAndCommandCheckTests(LinterRepoFixture):
         self.assertIn("DOES_NOT_EXIST.ts", result.stdout)
 
     def test_allowed_tools_referencing_an_existing_file_passes(self):
-        target = self.root / ".claude" / "skills" / "example" / "cli.ts"
+        target = self.root / ".agents" / "skills" / "example" / "cli.ts"
         target.write_text("// present\n", encoding="utf-8")
         self.write_skill(
             "---\n"
             "name: example\n"
             "description: Example skill\n"
-            "allowed-tools: Bash(bun run .claude/skills/example/cli.ts *)\n"
+            "allowed-tools: Bash(bun run .agents/skills/example/cli.ts *)\n"
             "---\n"
         )
 
@@ -159,14 +161,31 @@ class SkillAndCommandCheckTests(LinterRepoFixture):
         self.assertEqual(result.returncode, 1)
         self.assertIn("missing required key 'description'", result.stdout)
 
-    def test_command_without_slash_title_fails(self):
-        command = self.root / ".claude" / "commands" / "setup.md"
-        command.write_text("# setup - missing the slash\n", encoding="utf-8")
+    def test_frontmatter_name_not_matching_directory_fails(self):
+        """The cross-runtime invariant: Antigravity documents the *directory* as
+        the `/<skill>` command, Claude Code uses the frontmatter `name`. A
+        mismatch silently exposes one workflow under two names depending on who
+        reads the workspace, so the linter has to reject it."""
+        self.write_skill(
+            "---\nname: scrape\ndescription: Example skill\n---\n",
+            directory="job-scraper",
+        )
 
         result = run_linter(self.root)
 
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("must start with a '# /<name>' title", result.stdout)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("does not match directory", result.stdout)
+        self.assertIn("job-scraper", result.stdout)
+
+    def test_frontmatter_name_matching_directory_passes(self):
+        self.write_skill(
+            "---\nname: scrape\ndescription: Example skill\n---\n",
+            directory="scrape",
+        )
+
+        result = run_linter(self.root)
+
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

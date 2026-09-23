@@ -4,15 +4,20 @@ Step-by-step instructions for getting the AI Job Search framework running.
 
 ## 1. Prerequisites
 
-### Claude Code
+### An agent runtime
 
-Install Claude Code (Anthropic's CLI for Claude):
+Any agentic coding tool that reads `AGENTS.md` works. Pick one:
 
-```bash
-npm install -g @anthropic-ai/claude-code
-```
+- **[Google Antigravity](https://antigravity.google)** — reads `AGENTS.md` and `.agents/skills/`
+  natively, so this workspace is its home format. Free tier available.
+- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** —
+  `npm install -g @anthropic-ai/claude-code`. Needs an Anthropic API key or a Claude
+  Pro/Max/Team subscription.
+- **Codex, Gemini CLI, Cursor, GitHub Copilot CLI, Aider** — all read `AGENTS.md`; no
+  extra configuration.
 
-You'll need an Anthropic API key or a Claude Pro/Team subscription. See the [Claude Code docs](https://docs.anthropic.com/en/docs/claude-code) for details.
+`./install.sh` (section 3) reports which of these it can see. You can install a runtime
+later and re-run it — nothing is baked in at install time.
 
 ### Python
 
@@ -179,28 +184,34 @@ Or manually: fork on GitHub, then clone your fork.
 > personalization there is still the right move. Everything else in this guide works
 > identically either way.
 
-## 3. Install job search CLI dependencies
-Run these from the repository root.
+## 3. Install
 
-- PowerShell:
+From the repository root:
 
-```powershell
-$tools = @("jobbank-search", "jobdanmark-search", "jobindex-search", "jobnet-search", "linkedin-search", "freehire-search")
-foreach ($tool in $tools) {
-  Push-Location ".agents/skills/$tool/cli"
-  bun install
-  Pop-Location
-}
-```
-
-- Bash / zsh / Git Bash:
 ```bash
-for tool in jobbank-search jobdanmark-search jobindex-search jobnet-search linkedin-search freehire-search; do
-  (cd .agents/skills/$tool/cli && bun install)
-done
+./install.sh
 ```
 
-For `linkedin-search` and `freehire-search` the install is optional: both have zero runtime dependencies and run with plain `bun`; `bun install` only pulls TypeScript dev types.
+Windows: `.\install.ps1` (it passes `--copy` for you, since Windows blocks symlink
+creation unless Developer Mode is on). Anywhere: `python3 tools/install.py`.
+
+One command configures every agent you have. It checks prerequisites and says what each
+missing one costs, reports the runtimes it detects, writes the per-runtime projections
+(`CLAUDE.md`, `GEMINI.md`, `.claude/skills`) from the canonical `.agents/` tree, runs
+`bun install` for all six portal search CLIs, and lints the result. It writes nothing
+outside this directory and is safe to re-run.
+
+```bash
+./install.sh --check        # verify an existing install, change nothing
+./install.sh --skip-deps    # skip the bun install step
+./install.sh --copy         # copies instead of symlinks
+```
+
+Only Python 3.10+ is strictly required. Without bun you lose `/scrape`; without LaTeX you
+get `.tex` but no compiled `.pdf`. Install either later and re-run `./install.sh`.
+
+For `linkedin-search` and `freehire-search` the dependency install is a formality: both
+have zero runtime dependencies, and `bun install` only pulls TypeScript dev types.
 
 If you're outside Denmark, you can generate an equivalent search skill for your local job board with `/add-portal` — it scaffolds the same CLI structure for any public portal and test-runs a live query before registering. See the "Job search tools" section in the README.
 
@@ -230,7 +241,7 @@ All three paths produce the same result: fully populated profile files.
 
 | File | Content |
 |------|---------|
-| `CLAUDE.md` | Your full candidate profile |
+| `AGENTS.md` | Your full candidate profile |
 | `01-candidate-profile.md` | Structured education, experience, skills |
 | `02-behavioral-profile.md` | Behavioral assessment |
 | `04-job-evaluation.md` | Personalized skill match areas and career goals |
@@ -309,7 +320,7 @@ Upstream keeps improving the methodology files your fork has personalized, so pl
 
 **Prefer releases over raw `master`.** Tagged [releases](../../releases) are vetted checkpoints, each described in [CHANGELOG.md](CHANGELOG.md). Updating to a tag pulls a stable, documented state instead of whatever `master` happens to be mid-review. Fetch tags with `git fetch upstream --tags` and merge a release (for example `git merge v1.0.0`) when you want stability; pull `master` directly only when you specifically want the latest unreleased changes. The steps below apply either way - substitute the release tag for `upstream/master` where you see it.
 
-1. **Commit your personalization - but know where those commits land.** `/setup` edits CLAUDE.md and the profile skill files in place; those edits are *yours*, and committing them is what lets updates merge cleanly. But a GitHub **fork of this repo is public** - forks of public repositories cannot be made private - so anything you commit *and push to a fork* is visible to anyone. If you want your profile in a remote at all, don't push it to a fork: create a **private** repository, push there, and add this repo as the `upstream` remote (`git remote add upstream https://github.com/MadsLorentzen/ai-job-search.git`) to keep receiving updates. Committing locally without pushing is also fine. The genuinely sensitive files (tracker, salary data, `documents/`, application archives) are gitignored and never enter git either way. An uncommitted working tree is the most common reason `git pull` refuses to merge at all (`Your local changes ... would be overwritten`).
+1. **Commit your personalization - but know where those commits land.** `/setup` edits AGENTS.md and the profile skill files in place; those edits are *yours*, and committing them is what lets updates merge cleanly. But a GitHub **fork of this repo is public** - forks of public repositories cannot be made private - so anything you commit *and push to a fork* is visible to anyone. If you want your profile in a remote at all, don't push it to a fork: create a **private** repository, push there, and add this repo as the `upstream` remote (`git remote add upstream https://github.com/MadsLorentzen/ai-job-search.git`) to keep receiving updates. Committing locally without pushing is also fine. The genuinely sensitive files (tracker, salary data, `documents/`, application archives) are gitignored and never enter git either way. An uncommitted working tree is the most common reason `git pull` refuses to merge at all (`Your local changes ... would be overwritten`).
 2. **Preview what changed before pulling:**
    ```bash
    git remote add upstream https://github.com/MadsLorentzen/ai-job-search.git   # first time only, if you cloned your own fork
@@ -335,7 +346,7 @@ Upstream keeps improving the methodology files your fork has personalized, so pl
 This is expected if you haven't set up salary benchmarking. The `/apply` workflow skips this step automatically.
 
 ### Job search CLI tools not working
-Make sure Bun is installed and you ran `bun install` in each CLI directory. The tools require network access to fetch job listings.
+Run `./install.sh --check`: it reports whether bun is present and whether each CLI's dependencies are installed. If bun was missing when you first installed, install it and re-run `./install.sh`. The tools require network access to fetch job listings.
 
 ### LaTeX compilation errors
 - CV: uses `lualatex` (pdflatex often fails on modern MiKTeX with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly)

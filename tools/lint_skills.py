@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""Lint the repo's skill, command, and settings files.
+"""Lint the repo's skill and settings files.
 
 Run from anywhere: python tools/lint_skills.py
 
 Checks:
-- Every SKILL.md (.claude/skills/*, .agents/skills/*) has YAML frontmatter that
-  parses, with non-empty `name` and `description` keys
+- Every SKILL.md (.agents/skills/*, plus any legacy .claude/skills/*) has YAML
+  frontmatter that parses, with non-empty `name` and `description` keys
+- A skill's directory name equals its frontmatter `name`. Runtimes disagree about
+  which one backs the `/<skill>` command - Antigravity documents the directory,
+  Claude Code uses the frontmatter - so a mismatch means the same workspace
+  exposes a workflow under two different names depending on who reads it
 - `allowed-tools` entries of the form `Bash(bun run <path> *)` point at files
   that exist (skill paths resolve relative to the repo root and to .agents/)
-- Every .claude/commands/*.md starts with a `# /<name>` title
 - .claude/settings.json is valid JSON with a permissions.allow list
+- The per-runtime projections are intact (delegates to tools/agent_sync.py)
 
 Exit code 0 on success, 1 with a failure list otherwise.
 """
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -29,7 +34,10 @@ errors: list[str] = []
 
 
 def rel(path: Path) -> str:
-    return str(path.relative_to(ROOT))
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 def check_skill(path: Path) -> None:
@@ -53,6 +61,15 @@ def check_skill(path: Path) -> None:
         if not data.get(key):
             errors.append(f"{rel(path)}: frontmatter missing required key '{key}'")
 
+    name = data.get("name")
+    directory = path.parent.name
+    if name and str(name) != directory:
+        errors.append(
+            f"{rel(path)}: frontmatter name {str(name)!r} does not match directory "
+            f"{directory!r} - the skill would be /{name} on some runtimes and "
+            f"/{directory} on others; rename the directory to match"
+        )
+
     allowed = data.get("allowed-tools", "")
     if isinstance(allowed, str):
         for match in re.finditer(r"bun run ([^\s)]+)", allowed):
@@ -68,13 +85,6 @@ def check_skill(path: Path) -> None:
                 candidates = [ROOT / target, ROOT / ".agents" / target]
                 if not any(c.is_file() for c in candidates):
                     errors.append(f"{rel(path)}: allowed-tools references a missing file: {target}")
-
-
-def check_command(path: Path) -> None:
-    lines = path.read_text(encoding="utf-8").lstrip().splitlines()
-    first = lines[0] if lines else ""
-    if not first.startswith("# /"):
-        errors.append(f"{rel(path)}: command file must start with a '# /<name>' title (found: {first[:50]!r})")
 
 
 def check_settings() -> None:
@@ -95,26 +105,45 @@ def check_settings() -> None:
         errors.append(".claude/settings.json: expected permissions.allow to be a list")
 
 
+def check_projections() -> None:
+    """The per-runtime projections are agent_sync.py's contract, not ours -
+    delegate so there is one definition of "intact". Skipped in fixture repos
+    that carry no canonical tree."""
+    sync = ROOT / "tools" / "agent_sync.py"
+    if not sync.is_file() or not (ROOT / "AGENTS.md").is_file():
+        return
+    result = subprocess.run([sys.executable, str(sync), "--check"], capture_output=True, text=True)
+    if result.returncode != 0:
+        reported = [l.strip()[2:] for l in result.stdout.splitlines() if l.strip().startswith("- ")]
+        for line in reported:
+            errors.append(f"projection: {line}")
+        if not reported:
+            errors.append("projection: tools/agent_sync.py --check failed")
+
+
 def main() -> int:
-    skills = sorted(ROOT.glob(".claude/skills/*/SKILL.md")) + sorted(ROOT.glob(".agents/skills/*/SKILL.md"))
-    commands = sorted((ROOT / ".claude" / "commands").glob("*.md"))
+    # .claude/skills is normally a symlink onto .agents/skills, so the two globs
+    # return the same files twice - dedupe by resolved path.
+    found: dict[Path, Path] = {}
+    for pattern in (".agents/skills/*/SKILL.md", ".claude/skills/*/SKILL.md"):
+        for path in sorted(ROOT.glob(pattern)):
+            found.setdefault(path.resolve(), path)
+    skills = [found[key] for key in sorted(found)]
+
     if not skills:
         errors.append("no SKILL.md files found - glob roots are wrong or the tree moved")
-    if not commands:
-        errors.append("no command files found under .claude/commands/")
 
     for skill in skills:
         check_skill(skill)
-    for command in commands:
-        check_command(command)
     check_settings()
+    check_projections()
 
     if errors:
         print(f"lint_skills: {len(errors)} failure(s)")
         for err in errors:
             print(f"  - {err}")
         return 1
-    print(f"lint_skills: OK ({len(skills)} skills, {len(commands)} commands, settings.json)")
+    print(f"lint_skills: OK ({len(skills)} skills, settings.json, projections)")
     return 0
 
 

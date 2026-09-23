@@ -14,7 +14,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-GMAIL_SYNC = REPO / ".claude" / "commands" / "gmail-sync.md"
+GMAIL_SYNC = REPO / ".agents" / "skills" / "gmail-sync" / "SKILL.md"
 
 
 class TestGmailQueryOperators(unittest.TestCase):

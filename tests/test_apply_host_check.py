@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 REPO = Path(__file__).resolve().parent.parent
-APPLY_COMMAND_FILE = REPO / ".claude" / "commands" / "apply.md"
+APPLY_COMMAND_FILE = REPO / ".agents" / "skills" / "apply" / "SKILL.md"
 
 KNOWN_ATS_APEXES = {
     "greenhouse.io",

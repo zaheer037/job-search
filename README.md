@@ -12,7 +12,9 @@
 
 [![CI](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml/badge.svg)](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml)
 
-An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+An AI-powered job application framework that runs on **any** agentic coding tool — [Google Antigravity](https://antigravity.google), [Claude Code](https://claude.com/claude-code), Codex, Gemini CLI, Cursor. Fork it, fill in your profile, and let your agent evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+
+Workflows live in the portable [Agent Skills](https://agentskills.dev) format under [`.agents/skills/`](.agents/skills/), with root instructions in [`AGENTS.md`](AGENTS.md). Runtimes that need their own paths get generated projections — see [Runtimes](#runtimes).
 
 > Note: This is an independent open-source project and is not affiliated with, endorsed by, sponsored by, or maintained by Anthropic. Anthropic and Claude Code are referenced only to describe the toolchain this workflow uses.
 >
@@ -39,7 +41,7 @@ Sixty-nine tailored applications, twenty first interviews, and one signed contra
 
 ## What this is
 
-A structured workflow that turns Claude Code into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, etc.), but the pattern is designed to be swapped for your local job boards.
+A structured workflow that turns any agentic coding tool into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, etc.), but the pattern is designed to be swapped for your local job boards.
 
 ```
 /setup          /scrape              /apply <url>
@@ -61,11 +63,50 @@ The framework encodes career guidance best practices, including structured evalu
 
 ## Prerequisites
 
-- [Claude Code](https://claude.com/claude-code) (CLI). Claude Code has no free tier: you need a Claude Pro/Max/Team subscription or Anthropic API credits (pay-per-token, usually cheaper for occasional use). Using a different agent tool (Codex, Antigravity, Gemini CLI)? Start at [`AGENTS.md`](AGENTS.md) - the portal search skills work there out of the box, and [community forks](https://github.com/MadsLorentzen/ai-job-search/discussions/78) adapt the full workflow.
+- **An agentic coding tool.** Any of these work; see [Runtimes](#runtimes) for what each needs:
+  [Google Antigravity](https://antigravity.google) (free tier available),
+  [Claude Code](https://claude.com/claude-code) (needs a Claude Pro/Max/Team subscription or
+  Anthropic API credits — no free tier), Codex, Gemini CLI, Cursor, Copilot, Jules, Aider.
 - Python 3.10+
 - [Bun](https://bun.sh) (for job search CLI tools)
 - LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/), [MacTeX](https://tug.org/mactex/), [TinyTeX](https://yihui.org/tinytex/), or [MiKTeX](https://miktex.org/). The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`. If using a minimal TeX install such as TinyTeX or BasicTeX, install the extra packages listed in [SETUP.md](SETUP.md#minimal-tex-install-tinytexbasictex).
 - Optional: `pip install pypdf` for `/apply`'s ATS parseability check (BSD; no Poppler required). Poppler `pdftotext` remains a fallback (macOS: `brew install poppler`, Debian/Ubuntu: `apt install poppler-utils`, Windows: `choco install poppler`). If both are missing, the check degrades to a visual keyword review.
+
+## Runtimes
+
+Workflows live once, under [`.agents/skills/`](.agents/skills/), in the portable Agent Skills
+format. Root instructions live once, in [`AGENTS.md`](AGENTS.md). Runtimes that insist on
+their own paths get a **projection** — a symlink, or a stub that imports the canonical file —
+so there is no second copy of any rule and nothing to keep in sync by hand.
+
+```bash
+python3 tools/agent_sync.py            # create/repair the projections (run once after cloning)
+python3 tools/agent_sync.py --check    # verify they are intact
+python3 tools/agent_sync.py --copy     # real files instead of symlinks (Windows without dev mode)
+```
+
+| Runtime | Reads | Skills | Extra setup |
+|---|---|---|---|
+| **Google Antigravity** | `AGENTS.md`, `.agents/rules/` | `.agents/skills/` natively | none — it is the native layout |
+| **Claude Code** | `CLAUDE.md` → imports `AGENTS.md` | `.claude/skills` symlink | `agent_sync.py` (or `--copy`) |
+| **Gemini CLI** | `GEMINI.md` → `AGENTS.md` | reads skill files on request | `agent_sync.py` |
+| **Codex / Cursor / Copilot / Jules / Aider** | `AGENTS.md` | reads skill files on request | none |
+
+Every workflow is invoked the same way everywhere: `/<skill-directory-name>` where the runtime
+supports slash commands (`/setup`, `/scrape`, `/rank`, `/apply`, …), and otherwise by asking
+in plain language — "run the setup skill", "rank my scraped jobs". `tools/lint_skills.py`
+pins each skill's frontmatter `name` to its directory name, so the same workflow answers to
+the same `/name` no matter which runtime reads the workspace.
+
+**Missing a capability?** Skill bodies name one runtime's tools (`WebFetch`, `Glob`, the Agent
+tool). The capability table in [`AGENTS.md`](AGENTS.md#capability-map) maps them to yours, and
+the rule when something is genuinely absent is **degrade, then disclose**: do the sequential or
+shell equivalent and say which step ran degraded. A posting that could not be fetched is never
+scored from its title.
+
+**Permissions.** `.claude/settings.json` pre-approves the portal CLIs and helper scripts for
+Claude Code. Other runtimes prompt on first use, or accept an allowlist of their own — mirror
+[`.agents/rules/allowed-commands.md`](.agents/rules/allowed-commands.md) into it.
 
 ## Quick start
 
@@ -73,48 +114,62 @@ The framework encodes career guidance best practices, including structured evalu
 
 ### 1. Fork and clone
 
+**To use it for your own job search** (what almost everyone wants) — clone, and keep
+your copy **private**:
+
 ```bash
-gh repo fork MadsLorentzen/ai-job-search --clone
+git clone https://github.com/<owner>/<repo>.git
+cd ai-job-search
+```
+
+**To contribute changes back** — fork first:
+
+```bash
+gh repo fork <owner>/<repo> --clone
 cd ai-job-search
 ```
 
 > [!IMPORTANT]
 > **A fork of this repo is always public** — GitHub does not allow private forks of
-> public repositories — and `/setup` (step 3 below) writes your personal data (name,
+> public repositories — and `/setup` (step 3) writes your personal data (name,
 > contact details, employment history, salary expectations) into **tracked** files.
 > If this copy is for your own job search rather than for contributing changes back,
 > use a **private repository** with this repo as `upstream` instead — the two-minute
 > recipe is in [SETUP.md section 8](SETUP.md#8-pulling-upstream-updates-into-your-fork),
 > and every update workflow works identically. Fork only to contribute.
 
-### 2. Install job search tools
-
-PowerShell:
-
-```powershell
-$tools = @("jobbank-search", "jobdanmark-search", "jobindex-search", "jobnet-search", "linkedin-search", "freehire-search")
-foreach ($tool in $tools) {
-  Push-Location ".agents/skills/$tool/cli"
-  bun install
-  Pop-Location
-}
-```
-
-Bash / zsh / Git Bash:
+### 2. Install
 
 ```bash
-for tool in jobbank-search jobdanmark-search jobindex-search jobnet-search linkedin-search freehire-search; do
-  (cd .agents/skills/$tool/cli && bun install)
-done
+./install.sh
 ```
 
-For `linkedin-search` and `freehire-search` the install is optional: both have zero runtime dependencies and run with plain `bun`; `bun install` only pulls TypeScript dev types.
+Windows: `.\install.ps1`. Anywhere: `python3 tools/install.py`.
+
+That is the whole install. There is no per-agent step — it detects the agents you
+have and configures all of them in one pass:
+
+| | |
+|---|---|
+| **Prerequisites** | checks Python, bun, LaTeX, `pdftotext`/`pypdf`, and tells you what each missing one costs — nothing silently degrades |
+| **Runtimes** | reports which agents it can see (Antigravity, Claude Code, Codex, Gemini CLI, Cursor, Copilot, Aider) |
+| **Projections** | writes `CLAUDE.md`, `GEMINI.md` and the `.claude/skills` symlink from the canonical `.agents/` tree |
+| **Portal CLIs** | runs `bun install` for all six job-board search tools |
+| **Verify** | lints the 21 skills and fails loudly rather than half-installing |
+
+Nothing is written outside the repo directory. Re-run it any time — it is idempotent
+— and `./install.sh --check` verifies an existing install without changing anything.
+
+Only Python 3.10+ is strictly required. Missing bun just disables `/scrape`; missing
+LaTeX means you get `.tex` files but no compiled `.pdf`. Install either later and
+re-run `./install.sh` to pick it up.
 
 ### 3. Set up your profile
 
-```bash
-claude
-# Then inside Claude Code:
+Open the repo in your agent and run `/setup` — Antigravity and Claude Code expose it
+as a slash command; elsewhere just say "run the setup skill":
+
+```
 /setup
 ```
 
@@ -165,41 +220,49 @@ Postings are treated as untrusted input (the workflow follows no instructions em
 
 ```
 ai-job-search/
-├── CLAUDE.md                          # Main candidate profile + workflow rules
+├── AGENTS.md                          # CANONICAL: candidate profile, workflow rules, runtime contract
+├── .agents/
+│   ├── rules/                         # Runtime-neutral rules (Antigravity auto-loads these)
+│   │   ├── 00-workspace.md            # Where things live, degrade-then-disclose, non-negotiables
+│   │   └── allowed-commands.md        # Canonical command allowlist to mirror into your runtime
+│   └── skills/                        # CANONICAL: every workflow, invoked as /<directory-name>
+│       ├── setup/                     # /setup onboarding (documents folder, CV import, or interview)
+│       ├── scrape/                    # /scrape job search orchestration
+│       ├── rank/                      # /rank triage scraped jobs into a ranked shortlist
+│       ├── apply/                     # /apply workflow (drafter-reviewer)
+│       ├── expand/                    # /expand competency enrichment from documents and online presence
+│       ├── outcome/                   # /outcome record application results, archive materials
+│       ├── interview/                 # /interview stage-specific prep pack + mock interview
+│       ├── upskill/                   # /upskill skill gap analysis and learning plan
+│       ├── gmail-sync/                # /gmail-sync auto-detect application status from Gmail
+│       ├── html-report/               # /html-report generate application tracker dashboard
+│       ├── notion-sync/               # /notion-sync one-way pipeline view in a Notion database
+│       ├── add-template/              # /add-template register custom templates (LaTeX, Typst, ...)
+│       ├── add-portal/                # /add-portal generate a job-portal search skill for your market
+│       ├── reset/                     # /reset wipe profile data or documents folder
+│       ├── job-application-assistant/ # Core application methodology
+│       │   ├── SKILL.md               # Skill definition
+│       │   ├── 01-candidate-profile.md # Your education, experience, skills
+│       │   ├── 02-behavioral-profile.md# PI/DISC/personality assessment
+│       │   ├── 03-writing-style.md    # Tone, structure, do's and don'ts
+│       │   ├── 04-job-evaluation.md   # Scoring framework for job fit
+│       │   ├── 05-cv-templates.md     # LaTeX CV structure + tailoring rules
+│       │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
+│       │   ├── 07-interview-prep.md   # STAR examples + interview framework
+│       │   ├── 08-application-forms.md # Portal free-text fields
+│       │   └── 09-web-research.md     # Fetching postings, trust boundary, 403 escalation
+│       ├── jobbank-search/            # Akademikernes Jobbank (Denmark)
+│       ├── jobdanmark-search/         # Jobdanmark.dk (Denmark)
+│       ├── jobindex-search/           # Jobindex.dk (Denmark)
+│       ├── jobnet-search/             # Jobnet.dk (Denmark, government portal)
+│       ├── linkedin-search/           # LinkedIn public job listings (country-agnostic)
+│       └── freehire-search/           # freehire.me tech job aggregator (multi-market, REST API)
+├── CLAUDE.md                          # GENERATED: imports AGENTS.md so Claude Code picks it up
+├── GEMINI.md                          # GENERATED: points Gemini CLI at AGENTS.md
 ├── .claude/
-│   ├── commands/
-│   │   ├── apply.md                   # /apply workflow (drafter-reviewer)
-│   │   ├── setup.md                   # /setup onboarding (documents folder, CV import, or interview)
-│   │   ├── expand.md                  # /expand competency enrichment from documents and online presence
-│   │   ├── add-template.md            # /add-template register custom templates (LaTeX, Typst, ...)
-│   │   ├── add-portal.md              # /add-portal generate a job-portal search skill for your market
-│   │   ├── rank.md                    # /rank triage scraped jobs into a ranked shortlist
-│   │   ├── outcome.md                 # /outcome record application results, archive materials
-│   │   ├── gmail-sync.md              # /gmail-sync auto-detect application status from Gmail
-│   │   ├── interview.md               # /interview stage-specific prep pack + mock interview
-│   │   ├── html-report.md             # /html-report generate application tracker dashboard
-│   │   ├── notion-sync.md             # /notion-sync one-way pipeline view in a Notion database
-│   │   └── reset.md                   # /reset wipe profile data or documents folder
-│   ├── skills/
-│   │   ├── job-application-assistant/  # Core application skill
-│   │   │   ├── SKILL.md               # Skill definition
-│   │   │   ├── 01-candidate-profile.md # Your education, experience, skills
-│   │   │   ├── 02-behavioral-profile.md# PI/DISC/personality assessment
-│   │   │   ├── 03-writing-style.md    # Tone, structure, do's and don'ts
-│   │   │   ├── 04-job-evaluation.md   # Scoring framework for job fit
-│   │   │   ├── 05-cv-templates.md     # LaTeX CV structure + tailoring rules
-│   │   │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
-│   │   │   └── 07-interview-prep.md   # STAR examples + interview framework
-│   │   ├── job-scraper/               # Job search orchestration
-│   │   └── upskill/                   # /upskill skill gap analysis and learning plan
-│   └── settings.json                  # Claude Code permissions (shared, scoped)
-├── .agents/skills/                    # Job portal CLI tools
-│   ├── jobbank-search/                # Akademikernes Jobbank (Denmark)
-│   ├── jobdanmark-search/             # Jobdanmark.dk (Denmark)
-│   ├── jobindex-search/               # Jobindex.dk (Denmark)
-│   ├── jobnet-search/                 # Jobnet.dk (Denmark, government portal)
-│   ├── linkedin-search/               # LinkedIn public job listings (country-agnostic)
-│   └── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+│   ├── skills -> ../.agents/skills    # GENERATED: symlink so Claude Code discovers the skills
+│   ├── agents/                        # Claude Code subagent definitions (optional, Claude-only)
+│   └── settings.json                  # Claude Code pre-approved permissions (shared, scoped)
 ├── cv/
 │   └── main_example.tex               # moderncv LaTeX template
 ├── cover_letters/
@@ -266,7 +329,7 @@ If you prefer editing files directly instead of using `/setup`:
 
 | File | What to change |
 |------|---------------|
-| `CLAUDE.md` | Your full profile (name, education, experience, skills, goals) |
+| `AGENTS.md` | Your full profile (name, education, experience, skills, goals) |
 | `01-candidate-profile.md` | Structured version of your CV data |
 | `02-behavioral-profile.md` | Your behavioral assessment or self-assessment |
 | `04-job-evaluation.md` | Skill match areas, career goals, motivation filters |

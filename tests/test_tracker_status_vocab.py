@@ -34,14 +34,14 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-COMMANDS = REPO / ".claude" / "commands"
+COMMANDS = REPO / ".agents" / "skills"
 
-OUTCOME = COMMANDS / "outcome.md"
-GMAIL_SYNC = COMMANDS / "gmail-sync.md"
-HTML_REPORT = COMMANDS / "html-report.md"
-NOTION_SYNC = COMMANDS / "notion-sync.md"
-APPLY = COMMANDS / "apply.md"
-INTERVIEW = COMMANDS / "interview.md"
+OUTCOME = COMMANDS / "outcome" / "SKILL.md"
+GMAIL_SYNC = COMMANDS / "gmail-sync" / "SKILL.md"
+HTML_REPORT = COMMANDS / "html-report" / "SKILL.md"
+NOTION_SYNC = COMMANDS / "notion-sync" / "SKILL.md"
+APPLY = COMMANDS / "apply" / "SKILL.md"
+INTERVIEW = COMMANDS / "interview" / "SKILL.md"
 
 VOCAB_ANCHOR = "## Tracker status vocabulary"
 

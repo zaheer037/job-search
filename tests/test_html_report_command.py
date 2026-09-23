@@ -18,7 +18,7 @@ except ImportError:
     _HAVE_YAML = False
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-COMMAND_FILE = REPO_ROOT / ".claude" / "commands" / "html-report.md"
+COMMAND_FILE = REPO_ROOT / ".agents" / "skills" / "html-report" / "SKILL.md"
 LINT_SCRIPT = REPO_ROOT / "tools" / "lint_skills.py"
 GITIGNORE = REPO_ROOT / ".gitignore"
 
@@ -29,14 +29,13 @@ class HtmlReportCommandFileTests(unittest.TestCase):
     def test_command_file_exists(self):
         self.assertTrue(COMMAND_FILE.exists(), f"{COMMAND_FILE} not found")
 
-    def test_command_file_starts_with_correct_header(self):
-        """lint_skills.py rejects command files that don't start with '# /<name>'."""
+    def test_skill_file_has_portable_frontmatter(self):
+        """The portable Agent Skills format opens every SKILL.md with YAML, and
+        lint_skills.py enforces that `name` equals the directory."""
         text = COMMAND_FILE.read_text(encoding="utf-8")
-        first_line = text.lstrip().splitlines()[0]
-        self.assertTrue(
-            first_line.startswith("# /html-report"),
-            f"Command file must start with '# /html-report', got: {first_line!r}",
-        )
+        self.assertTrue(text.startswith("---\n"), "SKILL.md must open with YAML frontmatter")
+        self.assertIn("\nname: html-report\n", text, "frontmatter name must be 'html-report'")
+        self.assertIn("# /html-report", text, "the '# /html-report' heading documents the invocation")
 
     def test_command_file_is_non_empty(self):
         text = COMMAND_FILE.read_text(encoding="utf-8").strip()
@@ -58,7 +57,7 @@ class HtmlReportTrackerFieldTests(unittest.TestCase):
     # clean list diff naming the missing column instead.
     CANONICAL_HEADER = re.search(
         r"^\s*(date,company,[a-z_,]+)$",
-        (REPO_ROOT / ".claude" / "commands" / "apply.md").read_text(encoding="utf-8"),
+        (REPO_ROOT / ".agents" / "skills" / "apply" / "SKILL.md").read_text(encoding="utf-8"),
         re.M,
     ).group(1).split(",")
 

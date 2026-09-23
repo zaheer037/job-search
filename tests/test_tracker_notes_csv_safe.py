@@ -21,9 +21,9 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-COMMANDS = REPO / ".claude" / "commands"
-GMAIL_SYNC = COMMANDS / "gmail-sync.md"
-OUTCOME = COMMANDS / "outcome.md"
+COMMANDS = REPO / ".agents" / "skills"
+GMAIL_SYNC = COMMANDS / "gmail-sync" / "SKILL.md"
+OUTCOME = COMMANDS / "outcome" / "SKILL.md"
 
 TRACKER_HEADER = (
     "date,company,sector,role,role_type,channel,status,contact_person,"

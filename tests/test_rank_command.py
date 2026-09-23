@@ -20,10 +20,10 @@ except ImportError:
     _HAVE_YAML = False
 
 REPO = Path(__file__).resolve().parent.parent
-COMMAND = REPO / ".claude" / "commands" / "rank.md"
-SCRAPER_SKILL = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
+COMMAND = REPO / ".agents" / "skills" / "rank" / "SKILL.md"
+SCRAPER_SKILL = REPO / ".agents" / "skills" / "scrape" / "SKILL.md"
 EVALUATION = (
-    REPO / ".claude" / "skills" / "job-application-assistant" / "04-job-evaluation.md"
+    REPO / ".agents" / "skills" / "job-application-assistant" / "04-job-evaluation.md"
 )
 
 
@@ -43,13 +43,14 @@ def _sections(text: str) -> dict[str, str]:
 
 
 class RankCommandSpec(unittest.TestCase):
-    def test_command_file_exists_with_lint_compliant_header(self):
-        self.assertTrue(COMMAND.is_file(), "command spec missing")
-        first_line = COMMAND.read_text(encoding="utf-8").splitlines()[0]
-        self.assertTrue(
-            first_line.startswith("# /rank"),
-            f"header must start with '# /rank' (lint_skills.py enforces it), got: {first_line!r}",
-        )
+    def test_skill_file_exists_with_portable_frontmatter(self):
+        """The portable Agent Skills format opens every SKILL.md with YAML, and
+        lint_skills.py enforces that `name` equals the directory."""
+        self.assertTrue(COMMAND.is_file(), "skill spec missing")
+        text = COMMAND.read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\n"), "SKILL.md must open with YAML frontmatter")
+        self.assertIn("\nname: rank\n", text, "frontmatter name must be 'rank'")
+        self.assertIn("# /rank", text, "the '# /rank' heading documents the invocation")
 
     def test_step4_persists_gaps_and_strengths(self):
         sections = _sections(COMMAND.read_text(encoding="utf-8"))

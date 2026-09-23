@@ -4,20 +4,23 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-EXPAND_COMMAND_FILE = REPO_ROOT / ".claude" / "commands" / "expand.md"
+EXPAND_COMMAND_FILE = REPO_ROOT / ".agents" / "skills" / "expand" / "SKILL.md"
 
 
 class ExpandCommandTests(unittest.TestCase):
-    def test_expand_command_file_exists(self):
-        self.assertTrue(EXPAND_COMMAND_FILE.exists(), "expand.md must exist under .claude/commands/")
-
-    def test_expand_command_file_starts_with_correct_header(self):
-        text = EXPAND_COMMAND_FILE.read_text(encoding="utf-8")
-        first_line = text.lstrip().splitlines()[0]
+    def test_expand_skill_file_exists(self):
         self.assertTrue(
-            first_line.startswith("# /expand"),
-            f"Command file must start with '# /expand', got: {first_line!r}",
+            EXPAND_COMMAND_FILE.exists(),
+            "expand/SKILL.md must exist under .agents/skills/",
         )
+
+    def test_expand_skill_file_has_portable_frontmatter(self):
+        """The portable Agent Skills format opens every SKILL.md with YAML, and
+        lint_skills.py enforces that `name` equals the directory."""
+        text = EXPAND_COMMAND_FILE.read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\n"), "SKILL.md must open with YAML frontmatter")
+        self.assertIn("\nname: expand\n", text, "frontmatter name must be 'expand'")
+        self.assertIn("# /expand", text, "the '# /expand' heading documents the invocation")
 
     def test_expand_covers_all_discovery_sources(self):
         text = EXPAND_COMMAND_FILE.read_text(encoding="utf-8")

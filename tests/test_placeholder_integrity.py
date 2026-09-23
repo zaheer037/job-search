@@ -10,21 +10,25 @@ email passed the check (review finding F28, 2026-08-19; proven
 empirically). Same weakness for 01-candidate-profile.md's `<!-- SETUP`
 comment sentinel.
 
+The gate is content-based (tools/is_template.py), not repository-name based,
+so a fork republished as a template for other people keeps these guards.
+
 These tests pin (a) that ci.yml checks data-located sentinels, (b) that
 the sentinels exist in the pristine files, and (c) that simulating the
 /setup edit destroys at least one checked sentinel per file - i.e. the
 guard actually fires on the failure it exists to catch.
 """
-import os
+import sys
 import unittest
 from pathlib import Path
 
-UPSTREAM = "MadsLorentzen/ai-job-search"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tools.is_template import is_template  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 CI = REPO / ".github" / "workflows" / "ci.yml"
 EXAMPLE_CV = REPO / "cv" / "main_example.tex"
-PROFILE = REPO / ".claude" / "skills" / "job-application-assistant" / "01-candidate-profile.md"
+PROFILE = REPO / ".agents" / "skills" / "job-application-assistant" / "01-candidate-profile.md"
 
 # The literal sentinel strings (unescaped) that ci.yml's grep patterns match.
 CV_SENTINELS = ["\\name{[First]}{[Last]}", "\\email{[your.email@example.com]}"]
@@ -44,9 +48,9 @@ def personalize_cv(text: str) -> str:
     )
 
 
-@unittest.skipIf(
-    os.environ.get("GITHUB_REPOSITORY", UPSTREAM) != UPSTREAM,
-    "placeholder-integrity guards the pristine upstream template; forks personalize these files via /setup",
+@unittest.skipUnless(
+    is_template(),
+    "guards a pristine template; a personalized copy legitimately has these tokens replaced by /setup",
 )
 class TestCvSentinelsAreDataLocated(unittest.TestCase):
     def setUp(self):
@@ -81,15 +85,15 @@ class TestCvSentinelsAreDataLocated(unittest.TestCase):
         )
 
 
-@unittest.skipIf(
-    os.environ.get("GITHUB_REPOSITORY", UPSTREAM) != UPSTREAM,
-    "placeholder-integrity guards the pristine upstream template; forks personalize these files via /setup",
+@unittest.skipUnless(
+    is_template(),
+    "guards a pristine template; a personalized copy legitimately has these tokens replaced by /setup",
 )
 class TestProfileSentinelIsDataLocated(unittest.TestCase):
     def test_ci_checks_a_data_placeholder_not_the_header_comment(self):
         ci = CI.read_text(encoding="utf-8")
         self.assertIn(
-            "check .claude/skills/job-application-assistant/01-candidate-profile.md '\\[YOUR_EMAIL\\]'",
+            "check .agents/skills/job-application-assistant/01-candidate-profile.md '\\[YOUR_EMAIL\\]'",
             ci,
             "01's sentinel must sit in the Identity data /setup fills, not in "
             "a header comment the model may leave untouched",

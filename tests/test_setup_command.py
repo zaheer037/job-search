@@ -9,15 +9,18 @@ were not, so a full Path B/C run left `[YOUR_NAME]`, `[YOUR_EMAIL]` and
 on the drafter noticing. A real user (#420) ran `/setup` and then hand-edited both
 files to close the gap.
 """
-import os
+import sys
 import unittest
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from tools.is_template import is_template  # noqa: E402
 
 UPSTREAM = "MadsLorentzen/ai-job-search"
 
 REPO = Path(__file__).resolve().parent.parent
-COMMAND = REPO / ".claude" / "commands" / "setup.md"
-SKILL_DIR = REPO / ".claude" / "skills" / "job-application-assistant"
+COMMAND = REPO / ".agents" / "skills" / "setup" / "SKILL.md"
+SKILL_DIR = REPO / ".agents" / "skills" / "job-application-assistant"
 CV_TEMPLATES = SKILL_DIR / "05-cv-templates.md"
 COVER_TEMPLATES = SKILL_DIR / "06-cover-letter-templates.md"
 
@@ -70,9 +73,9 @@ class SetupStep3ContactBlocks(unittest.TestCase):
         self.assertIn("06-cover-letter-templates.md", summary)
 
 
-@unittest.skipIf(
-    os.environ.get("GITHUB_REPOSITORY", UPSTREAM) != UPSTREAM,
-    "template-placeholder guard targets the pristine upstream template; forks personalize 05-cv-templates.md and 06-cover-letter-templates.md via /setup",
+@unittest.skipUnless(
+    is_template(),
+    "guards a pristine template; a personalized copy legitimately has these tokens replaced by /setup",
 )
 class TemplatesStillCarryThePlaceholders(unittest.TestCase):
     """The instructions above target real tokens; if a template renames them,

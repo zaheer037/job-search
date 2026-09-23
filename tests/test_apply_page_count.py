@@ -16,7 +16,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-APPLY = REPO / ".claude" / "commands" / "apply.md"
+APPLY = REPO / ".agents" / "skills" / "apply" / "SKILL.md"
 VERIFY_LAYOUT = REPO / "tools" / "verify_layout.py"
 
 

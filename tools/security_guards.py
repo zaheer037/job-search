@@ -66,7 +66,7 @@ ALLOWED_PERMISSIONS = {
 REQUIRED_IGNORE_RULES = [
     "salary_data.json",
     # Depth-independent: the job-scraper skill resolves `job_scraper/` relative
-    # to its own directory, so the state file lands under .claude/skills/... and
+    # to its own directory, so the state file lands under .agents/skills/... and
     # a repo-rooted rule silently fails to match it.
     "**/job_scraper/seen_jobs.json",
     "**/job_scraper/notion_sync.json",
@@ -97,7 +97,7 @@ REQUIRED_IGNORE_RULES = [
     # Depth-independent twin of the rule above. The upskill *skill* resolves
     # `upskill/` relative to its own directory - the same observed behavior
     # the **/job_scraper rules exist for - so reports can land at
-    # .claude/skills/upskill/upskill/*.md where the rooted rule cannot see
+    # .agents/skills/upskill/upskill/*.md where the rooted rule cannot see
     # them. `**/upskill/*.md` would also ignore the skill's own SKILL.md
     # (the directory shares the name), so the report-file prefix is pinned.
     "**/upskill/report-*.md",

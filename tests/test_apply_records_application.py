@@ -25,15 +25,15 @@ except ImportError:
     _HAVE_YAML = False
 
 REPO = Path(__file__).resolve().parent.parent
-COMMANDS = REPO / ".claude" / "commands"
-APPLY = COMMANDS / "apply.md"
-OUTCOME = COMMANDS / "outcome.md"
-GMAIL_SYNC = COMMANDS / "gmail-sync.md"
-HTML_REPORT = COMMANDS / "html-report.md"
-INTERVIEW = COMMANDS / "interview.md"
-NOTION_SYNC = COMMANDS / "notion-sync.md"
-SKILL = REPO / ".claude" / "skills" / "job-application-assistant" / "SKILL.md"
-SCRAPER = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
+COMMANDS = REPO / ".agents" / "skills"
+APPLY = COMMANDS / "apply" / "SKILL.md"
+OUTCOME = COMMANDS / "outcome" / "SKILL.md"
+GMAIL_SYNC = COMMANDS / "gmail-sync" / "SKILL.md"
+HTML_REPORT = COMMANDS / "html-report" / "SKILL.md"
+INTERVIEW = COMMANDS / "interview" / "SKILL.md"
+NOTION_SYNC = COMMANDS / "notion-sync" / "SKILL.md"
+SKILL = REPO / ".agents" / "skills" / "job-application-assistant" / "SKILL.md"
+SCRAPER = REPO / ".agents" / "skills" / "scrape" / "SKILL.md"
 DOCS_README = REPO / "documents" / "README.md"
 
 TRACKER_HEADER = (

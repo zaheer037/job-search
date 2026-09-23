@@ -285,9 +285,9 @@ class GitignorePatternBehaviorTests(unittest.TestCase):
         # pins that it stays tracked.
         cases = {
             "upskill/report-2026-08-11.md": True,
-            ".claude/skills/upskill/upskill/report-2026-08-11.md": True,
-            ".claude/skills/upskill/upskill/report-2026-08-11-acme-engineer.md": True,
-            ".claude/skills/upskill/SKILL.md": False,
+            ".agents/skills/upskill/upskill/report-2026-08-11.md": True,
+            ".agents/skills/upskill/upskill/report-2026-08-11-acme-engineer.md": True,
+            ".agents/skills/upskill/SKILL.md": False,
         }
         for path, expect_ignored in cases.items():
             with self.subTest(path=path):
@@ -313,7 +313,7 @@ class GitignorePatternBehaviorTests(unittest.TestCase):
         # so either half can move independently and each must be pinned.
         folder = "documents/applications/<company>_<role>/"
         filename = "interview_prep_<stage>.md"
-        spec = (REPO_ROOT / ".claude" / "commands" / "interview.md").read_text(encoding="utf-8")
+        spec = (REPO_ROOT / ".agents" / "skills" / "interview" / "SKILL.md").read_text(encoding="utf-8")
         for fragment in (folder, filename):
             # assertTrue, not assertIn: the haystack is the whole command spec,
             # and dumping it buries the one sentence explaining the failure.

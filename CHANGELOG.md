@@ -15,6 +15,31 @@ per-file diff commands.
 
 ### Added
 
+- **Runtime-neutral layout: the workspace now runs on any agent, not just Claude Code**
+  (`AGENTS.md`, `.agents/skills/`, `.agents/rules/`, `tools/agent_sync.py`,
+  `tools/lint_skills.py`) - `.agents/skills/` is now the single source of truth, in the
+  portable Agent Skills format that Google Antigravity reads natively. The twelve
+  `.claude/commands/*.md` became `.agents/skills/<name>/SKILL.md`, and the three
+  methodology skills moved alongside them, so all 21 skills are discoverable as
+  `/<name>` on Antigravity and Claude Code alike. `AGENTS.md` absorbed the candidate
+  profile and gained a runtime table plus a capability map (fetch, search, subagents,
+  visual PDF read) with a **degrade-then-disclose** rule, so a runtime missing a
+  capability does the shell equivalent and says so instead of fabricating a result.
+  `CLAUDE.md`, `GEMINI.md` and `.claude/skills` are now generated projections - a
+  symlink and two import stubs - written and drift-checked by `tools/agent_sync.py`
+  (`--check` runs in CI; `--copy` covers Windows without Developer Mode). Previously
+  `AGENTS.md` declared `.claude/` canonical, so every non-Claude runtime could see the
+  portal search CLIs but none of the workflows.
+
+- **One-command install** (`install.sh`, `install.ps1`, `tools/install.py`,
+  `tests/test_install.py`) - clone and run `./install.sh`. It checks prerequisites and
+  names what each missing one costs, reports the agent runtimes it detects, writes the
+  per-runtime projections, runs `bun install` for all six portal CLIs, and lints the
+  result rather than half-installing. Idempotent; `--check` verifies without changing
+  anything. Nothing is written outside the repo directory - the workspace is
+  project-scoped because skills resolve paths against the repo root and it holds
+  personal career data.
+
 - **Real Excel workbook integration tests for the salary converter**
   (`tests/test_convert_salary_excel_integration.py`, `.github/workflows/ci.yml`) -
   generate temporary `.xlsx` files and invoke the documented converter CLI,
@@ -25,13 +50,13 @@ per-file diff commands.
   the two integration cases while retaining the existing dependency-free tests.
 
 - **`documents/projects/` portfolio ingestion in `/setup` (Path A)** (`documents/README.md`,
-  `.claude/commands/setup.md`, `.claude/commands/reset.md`, `tests/test_setup_command.py`) -
+  `.agents/skills/setup/SKILL.md`, `.agents/skills/reset/SKILL.md`, `tests/test_setup_command.py`) -
   onboards project writeups, case studies, and documentation (`.md`, `.txt`, `.pdf`)
   from `documents/projects/`, extracting structured summaries (problem domain, tech stack,
   technical challenges, and measurable outcomes) to populate `## Independent Projects`
   in `01-candidate-profile.md`.
 
-- **Source host verification in `/apply` Step 1** (#431, `.claude/commands/apply.md`,
+- **Source host verification in `/apply` Step 1** (#431, `.agents/skills/apply/SKILL.md`,
   `tests/test_apply_host_check.py`) - before proceeding to draft CV and cover letters,
   Step 1 verifies the posting URL's provenance against installed portal boards and the
   six standard ATS apex domains (`greenhouse.io`, `lever.co`, `myworkdayjobs.com`/`workday.com`,
@@ -39,13 +64,13 @@ per-file diff commands.
   fails closed, and unrecognized hosts are plainly flagged as unverified in the evaluation
   output (`⚠ Unverified source host: <hostname>`) before drafting tokens are spent.
 
-- **`/expand` project and portfolio expansion** (`.claude/commands/expand.md`,
+- **`/expand` project and portfolio expansion** (`.agents/skills/expand/SKILL.md`,
   `tests/test_expand_command.py`) - expands candidate discovery
   to technical projects from public GitHub repositories, extracting structured summaries
   (problem domain, tech stack, key technical challenges, and verifiable outcomes) to
   populate the `## Independent Projects` section of `01-candidate-profile.md`.
 
-- **Stale sweep branch in `/outcome`** (`.claude/commands/outcome.md`,
+- **Stale sweep branch in `/outcome`** (`.agents/skills/outcome/SKILL.md`,
   `tests/test_outcome_stale.py`) - introduces `/outcome stale [N]` (and `/outcome sweep [N]`)
   to batch-resolve open applications quiet for 60+ (or N) days. Displays a numbered summary
   of qualifying applications, requires explicit user confirmation (`all`, `select`, or `skip`),
@@ -71,8 +96,24 @@ per-file diff commands.
 
 ### Changed
 
+- **Skill directory names now match their frontmatter `name`** (`.agents/skills/scrape/`,
+  `tools/lint_skills.py`) - `job-scraper/` declared `name: scrape`, and runtimes disagree
+  about which one backs `/<skill>`: Antigravity documents the directory, Claude Code uses
+  the frontmatter. The directory was renamed to `scrape/` and the linter now rejects any
+  mismatch, so one workflow can no longer answer to two different names depending on who
+  reads the workspace.
+
+- **Template guards are gated on content, not on the repository name**
+  (`tools/is_template.py`, `.github/workflows/ci.yml`, `tests/test_placeholder_integrity.py`,
+  `tests/test_setup_command.py`) - the placeholder-integrity job, the stock-PDF assertions
+  and the `framework_version` gate ran only when `github.repository` equalled the original
+  owner's slug, which silently disabled all three in every other template repo - including
+  a fork republished for other people to clone, which is exactly where a committed name or
+  address does the most damage. They now run while `AGENTS.md` still carries `[YOUR_NAME]`
+  and stand down once `/setup` has personalized the copy.
+
 - **`/add-template` keeps a registered template's intermediates in `build/`**
-  (#473, `.claude/commands/add-template.md`, `.gitignore`,
+  (#473, `.agents/skills/add-template/SKILL.md`, `.gitignore`,
   `tests/test_add_template_build_dir.py`) - the elicited compile command
   now redirects intermediates (`.aux`, `.log`, ...) to a `build/` folder beside the source
   and moves the PDF back, so Step 4's test-compile cleanup deletes one folder instead of
@@ -133,7 +174,7 @@ per-file diff commands.
   all three column orders with and without a BOM.
 
 - **`/apply` Step 5b now actually runs the page-count check it claimed Step 5d ran**
-  (`.claude/commands/apply.md`, `tests/test_apply_page_count.py`) - the 5b prose said
+  (`.agents/skills/apply/SKILL.md`, `tests/test_apply_page_count.py`) - the 5b prose said
   "Page count is not checked here - that is `verify_pdf.py --pages`'s job, and Step 5d already
   runs it", and `verify_layout.py`'s docstring declines to measure page count for the same
   reason. Step 5d's only `verify_pdf.py` call is `--dump-text`, and no step in the workflow
@@ -234,8 +275,8 @@ per-file diff commands.
   wrappers, plus a new `detail-backoff.test.ts` that exercises the handler path itself -
   its retry cases fail against the bare `fetch()`.
 
-- **Free-form tracker notes no longer break the CSV row** (#454) (`.claude/commands/gmail-sync.md`,
-  `.claude/commands/outcome.md`, `tests/test_tracker_notes_csv_safe.py`) - two writers put
+- **Free-form tracker notes no longer break the CSV row** (#454) (`.agents/skills/gmail-sync/SKILL.md`,
+  `.agents/skills/outcome/SKILL.md`, `tests/test_tracker_notes_csv_safe.py`) - two writers put
   free-form text into the `notes` column of `job_search_tracker.csv`: `/gmail-sync` Step 7a
   copied the raw subject of a received email, and `/outcome` Step 4 appended "a short dated
   note" with no constraint on its content. No writer in the framework emits a quoted tracker
@@ -274,7 +315,7 @@ per-file diff commands.
   host-check rule proposed in #431, which stays with its proposer.
 
 - **`/outcome` and `/interview` no longer confuse two roles at the same company** (#443)
-  (`.claude/commands/outcome.md`, `.claude/commands/interview.md`,
+  (`.agents/skills/outcome/SKILL.md`, `.agents/skills/interview/SKILL.md`,
   `tests/test_apply_records_application.py`) - when a tracker row's `cv_file` /
   `cover_letter_file` columns are empty, both commands fell back to a company-prefix glob
   (`cv/main_<company>*.tex`). Two roles at one company both match it, so `/outcome` copied
@@ -304,7 +345,7 @@ per-file diff commands.
   The file's instruction and its own snippet disagreed, and the snippet won silently.
   Both expansions are now guarded with `${SCRATCHPAD:?...}`, turning a silent repo write into
   an immediate failure whose message names where the value comes from. Behaviour is unchanged
-  wherever the variable is set. The same undefined reference in `.claude/commands/rank.md`
+  wherever the variable is set. The same undefined reference in `.agents/skills/rank/SKILL.md`
   was removed by #425 as a side effect of rewriting Step 2/4; this is the remaining instance.
 
 - **`seen_jobs.json` keys are now a pure function of the posting** - `/scrape` Step 4 described
@@ -642,7 +683,7 @@ per-file diff commands.
   `/setup` placeholders while preserving the scoring framework and the query structure;
   `04-job-evaluation.md` is out of the preserved list, which keeps `03-writing-style.md`
   and `06-cover-letter-templates.md` (correctly - the latter's `[YOUR_NAME]` tokens are
-  LaTeX scaffolding Step 3 never writes to). `CLAUDE.md` and `cv/main_example.tex` stay
+  LaTeX scaffolding Step 3 never writes to). `AGENTS.md` and `cv/main_example.tex` stay
   outside the `profile` scope, which covers skill files only, and the preview and Step 4
   now say so instead of implying a full wipe. `tests/test_reset_command.py` gains a
   profile-scope guard alongside its documents-scope one, deriving the file list from
@@ -918,7 +959,7 @@ per-file diff commands.
   encoding flag emits Latin-1 on Xpdf builds, so every non-ASCII character in a correct CV
   (Rambøll, Ingeniør, København) read back as a replacement character and failed the
   parseability checklist, steering the agent to "fix" a healthy document. The commands in
-  `apply.md`, `05-cv-templates.md`, and `CLAUDE.md`'s verification checklist now carry
+  `apply.md`, `05-cv-templates.md`, and `AGENTS.md`'s verification checklist now carry
   `-enc UTF-8`, which is deterministic on both poppler and Xpdf. Pinned by
   `tests/test_latex_guidance.py`.
 
@@ -1090,11 +1131,11 @@ per-file diff commands.
   The ignore rule `upskill/*.md` is rooted (a middle slash anchors a gitignore pattern to the
   repo root), but `/upskill` is a *skill*, and skills resolve bare relative paths against
   their own directory - the same observed behavior the `**/job_scraper/*` rules exist for.
-  A report written to `.claude/skills/upskill/upskill/report-*.md` was therefore not ignored
+  A report written to `.agents/skills/upskill/upskill/report-*.md` was therefore not ignored
   (`git check-ignore` confirms it on the unpatched tree), and an upskill report is the
   candidate's skill gaps and weaknesses measured against named employers - among the most
   sensitive files the workflow generates. The obvious widening, `**/upskill/*.md`, would have
-  ignored the template's own `.claude/skills/upskill/SKILL.md` (the skill directory shares
+  ignored the template's own `.agents/skills/upskill/SKILL.md` (the skill directory shares
   the name), so the new rule pins the report-file prefix instead: `**/upskill/report-*.md`.
   Added to `.gitignore` and `security_guards.py`'s `REQUIRED_IGNORE_RULES`, with a
   `check-ignore`-based test pinning both properties - reports ignored at both depths,
@@ -1316,7 +1357,7 @@ per-file diff commands.
   language requirements against what the candidate actually speaks (not a Scoring Dimension,
   not a `/scrape`/`/rank` field, nothing for `/apply`'s existing generic language detection
   to report to). Adds that check, structured like the existing Eligibility Gate, on a new
-  structured `Languages` table in CLAUDE.md / `01-candidate-profile.md` (`/setup` asks, or
+  structured `Languages` table in AGENTS.md / `01-candidate-profile.md` (`/setup` asks, or
   infers it from a CV/LinkedIn export): a posting requiring a language you haven't declared
   at all is a hard **FAIL**; one requiring a higher level than you declared in a language you
   *do* work in is **FLAG**, not an auto-reject, so borderline cases (a strict "fluent" bar vs.
