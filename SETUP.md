@@ -161,9 +161,9 @@ If a command still uses `pdftotext -layout`, it must pass `-enc UTF-8` as well. 
 ## 2. Fork and clone
 
 ```bash
-gh repo fork MadsLorentzen/ai-job-search --clone
-cd ai-job-search
-gh repo set-default <your-github-username>/ai-job-search
+gh repo fork zaheer037/job-search --clone
+cd job-search
+gh repo set-default <your-github-username>/job-search
 ```
 
 Or manually: fork on GitHub, then clone your fork.

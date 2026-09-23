@@ -10,7 +10,7 @@
   <a href="https://trendshift.io/repositories/43622?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-43622" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/43622/daily" alt="MadsLorentzen%2Fai-job-search | Trendshift" width="250" height="55"/></a>
 </p>
 
-[![CI](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml/badge.svg)](https://github.com/MadsLorentzen/ai-job-search/actions/workflows/ci.yml)
+[![CI](https://github.com/zaheer037/job-search/actions/workflows/ci.yml/badge.svg)](https://github.com/zaheer037/job-search/actions/workflows/ci.yml)
 
 An AI-powered job application framework that runs on **any** agentic coding tool — [Google Antigravity](https://antigravity.google), [Claude Code](https://claude.com/claude-code), Codex, Gemini CLI, Cursor. Fork it, fill in your profile, and let your agent evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
 
@@ -118,15 +118,15 @@ Claude Code. Other runtimes prompt on first use, or accept an allowlist of their
 your copy **private**:
 
 ```bash
-git clone https://github.com/<owner>/<repo>.git
-cd ai-job-search
+git clone https://github.com/zaheer037/job-search.git
+cd job-search
 ```
 
 **To contribute changes back** — fork first:
 
 ```bash
-gh repo fork <owner>/<repo> --clone
-cd ai-job-search
+gh repo fork zaheer037/job-search --clone
+cd job-search
 ```
 
 > [!IMPORTANT]

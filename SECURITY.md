@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security findings privately via **[GitHub private vulnerability reporting](https://github.com/MadsLorentzen/ai-job-search/security/advisories/new)** rather than a public issue. You will get a response within a few days, credit in the fix unless you prefer otherwise, and public disclosure coordinated with the patch.
+Please report security findings privately via **[GitHub private vulnerability reporting](https://github.com/zaheer037/job-search/security/advisories/new)** rather than a public issue. You will get a response within a few days, credit in the fix unless you prefer otherwise, and public disclosure coordinated with the patch.
 
 If the private form is unavailable, open a public issue that describes the *class* of problem without a working recipe, and note that you have details to share privately.
 
