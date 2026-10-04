@@ -12,69 +12,83 @@ The `site:` query templates in this file are the **WebSearch fallback** — for 
 
 ## Search Sites
 
-Primary (your market's job boards - scaffold one with `/add-portal`):
-- **[YOUR_JOB_BOARD]** - your market's largest general job board
-- **linkedin.com/jobs** - LinkedIn job listings (filter: [YOUR_COUNTRY] / [YOUR_CITY]); also covered by `linkedin-search` CLI
-- **[YOUR_INDUSTRY_JOB_BOARD]** - a niche/industry board for your field (optional)
-- **[YOUR_ADDITIONAL_JOB_BOARD]** - another major board for your market (optional)
+Primary:
+- **linkedin.com/jobs** - LinkedIn job listings (filter: India, Hyderabad, Bengaluru, Remote); covered by `linkedin-search` CLI
+- **freehire.me** - Aggregated developer/data roles; covered by `freehire-search` CLI
+- **naukri.com** - Leading job board for tech and data engineering in India
+- **instahyre.com / wellfound.com** - Tech startup and scale-up engineering roles
 
 Secondary (company career pages via Google):
-- Direct Google searches with `site:` filters for known target companies
+- Direct Google searches with `site:` filters for known target companies and ATS platforms (Greenhouse, Lever, Ashby, Workday)
 
 ## Query Categories
 
-Queries are grouped by priority. Write **each category in every language from your Languages table** (see Language scope above). Combine each query with your location terms (e.g. your city, region, or metro area) where the site supports it.
+Queries are organized by functional domain and role priorities:
 
-**Organize by function, not job title.** The same underlying work carries different titles across companies and markets (a "Data Scientist" role at one employer may be posted as "Insights Analyst" or "Data Consultant" at another). Name each priority category after the function it covers, and list several plausible job titles as query variants within that category rather than betting an entire priority tier on one exact title string.
+### Priority 1: Data Engineering & Pipeline Engineering
 
-### Priority 1: [YOUR_PRIMARY_ROLE_TYPE]
+Primary career focus matching core competencies in Python, SQL, Celery, PostgreSQL, DuckDB, AWS.
 
-These match your strongest and most desired career direction.
-
-```
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_2]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_KEY_SKILL]" [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_COUNTRY]
-```
-
-### Priority 2: [YOUR_DOMAIN_EXPERTISE]
-
-These match your domain expertise.
+Lead with entry-level wording (see the Experience Filter below): "junior", "associate", "entry level", "fresher", "trainee", "Data Engineer I". On `freehire-search`, add `--seniority junior`.
 
 ```
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] OR [YOUR_REGION]
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_2] [YOUR_COUNTRY]
-site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] [YOUR_COUNTRY]
+site:linkedin.com/jobs "Junior Data Engineer" OR "Associate Data Engineer" OR "Data Engineer I" India
+site:linkedin.com/jobs "Data Engineer" "fresher" OR "entry level" OR "0-2 years" India
+site:linkedin.com/jobs "Data Engineer" "Python" "SQL" India
+site:linkedin.com/jobs "Data Engineer" Hyderabad OR Bangalore OR Bengaluru OR Remote
+site:naukri.com "Data Engineer" "Python" "PostgreSQL" "AWS"
+site:naukri.com "Associate Data Engineer" OR "Junior Data Engineer"
 ```
 
-### Priority 3: [YOUR_ADJACENT_ROLE_TYPE]
+### Priority 2: Python Backend & Distributed Task Engineering
 
-Adjacent roles you could pivot into.
-
-```
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_1]" [YOUR_KEY_SKILL] [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_2]" [YOUR_KEY_SKILL] [YOUR_CITY]
-```
-
-### Priority 4: Broader Technical / Consulting
-
-Wider net for general technical roles.
+Asynchronous backend and data infrastructure roles matching FastAPI, Celery, Redis, and cloud services.
 
 ```
-site:[YOUR_JOB_BOARD] [YOUR_KEY_SKILL] developer [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_KEY_SKILL] developer" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "technical consultant" [YOUR_DOMAIN] [YOUR_CITY]
+site:linkedin.com/jobs "Python Backend Engineer" "FastAPI" OR "Celery" India
+site:linkedin.com/jobs "Backend Developer" "Python" "PostgreSQL" Remote
+site:naukri.com "Python Developer" "FastAPI" "PostgreSQL"
+```
+
+### Priority 3: Analytics Engineering & ETL/ELT Systems
+
+Analytics engineering, database transformations, and analytical query modeling (DuckDB, SQL, Parquet).
+
+```
+site:linkedin.com/jobs "Analytics Engineer" "SQL" "Python" India
+site:linkedin.com/jobs "ETL Developer" OR "Pipeline Engineer" India
+site:naukri.com "Analytics Engineer" "SQL" "PostgreSQL"
+```
+
+### Priority 4: Broader Tech / Startup Data Engineering
+
+Broader searches across high-growth startups and tech platforms.
+
+```
+site:wellfound.com "Data Engineer" Python SQL Remote
+site:instahyre.com "Data Engineer" "Python" "PostgreSQL"
 ```
 
 ## Location Filter
 
-When evaluating results, verify the job location is within reasonable commute distance from your home. Define acceptable areas:
-- [YOUR_CITY] and surrounding areas
-- [ACCEPTABLE_AREA_1]
-- [ACCEPTABLE_AREA_2]
-- [BORDERLINE_AREA] (borderline - ~X min by transit)
-- [TOO_FAR_AREA] (too far)
+When evaluating results, verify the job location matches the candidate's preferences:
+- **Remote**: 100% Remote / Work from Home (India or Global) - IDEAL (PASS)
+- **Hyderabad, Telangana**: High preference (PASS)
+- **Bengaluru / Bangalore, Karnataka**: High preference (PASS)
+- **Andhra Pradesh / Guntur / Vijayawada**: Local / Hybrid (PASS)
+- **Other Major Indian Tech Hubs (Chennai, Pune, Gurgaon/Noida)**: ACCEPTABLE with hybrid/relocation support (PASS)
+- **Strict On-site in other locations with no relocation support**: FAIL
+
+## Experience Filter
+
+The candidate has **under 1 year of full-time experience** (Junior Data Engineer since Jan 2026) plus two summer 2025 internships. Read each posting's stated minimum experience before assigning fit - skill match alone never makes a role High fit:
+- **Fresher / 0-1 years / 0-2 years / entry level / graduate or trainee / "1+ years including internships"**: realistic - score on skills as normal
+- **1-2 or 1-3 years**: stretch - keep, flag the gap
+- **2+ years minimum**: Low fit regardless of skill match
+- **3+ years minimum, or Senior / Lead / Staff / II / III / Specialist titles**: skip
+- **No years stated**: judge from title and responsibilities ("expert-level", "proven expertise", "own the architecture" read as mid-level) and flag "years not stated"
+
+Watch for postings that rate individual skills "entry level (1-3 years)" but state a higher overall minimum elsewhere (e.g. "Exp - 5+ years"): the overall minimum wins.
 
 ## Language Filter
 

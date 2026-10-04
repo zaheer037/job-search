@@ -60,9 +60,9 @@ How well do the required/preferred skills align with the candidate's capabilitie
 | 40-59 | Partial match, significant upskilling needed |
 | 0-39 | Fundamental mismatch |
 
-**Strong match areas:** [YOUR_PRIMARY_SKILLS]
-**Moderate match areas:** [YOUR_SECONDARY_SKILLS]
-**Weak match areas:** [SKILLS_YOU_LACK]
+**Strong match areas:** Python, SQL, PostgreSQL, DuckDB, Celery, FastAPI, ETL/ELT pipelines, AWS (S3, Lambda, EC2), distributed task queues, data quality gating, entity resolution, backfill/audit tooling
+**Moderate match areas:** Redis, Docker, RabbitMQ, Pytest, React, TypeScript, Shell Scripting, MongoDB, Parquet, LLM extraction pipelines, LLM output evaluation against gold datasets, REST API design with JWT/RBAC, event-driven design with Kafka outbox & CQRS (personal project only - not production Kafka)
+**Weak match areas:** Deep Java/Scala Spark big data clusters, C++, enterprise legacy data tools (Informatica, Talend, SSIS), complex low-level kernel C networking
 
 ### 2. Experience Match (0-100)
 Does work history align with what they're looking for? Match on the function and nature of the work performed, not the literal job title - a "Data Consultant" and a "Data Scientist" role can be functionally identical.
@@ -74,9 +74,11 @@ Does work history align with what they're looking for? Match on the function and
 | 40-59 | Adjacent experience, would need to make the case |
 | 0-39 | Unrelated experience |
 
-**Strong:** [YOUR_DIRECT_EXPERIENCE_DOMAINS]
-**Moderate:** [YOUR_ADJACENT_EXPERIENCE]
-**Entry-level:** [ROLES_WITH_LIMITED_EXPERIENCE]
+**Strong:** Data Engineering, Python Data Pipelines, Batch ETL/ELT Ingestion, Database Schema Optimization, Entity Resolution, Backend API & Queue Engineering
+**Moderate:** Full-stack Data Applications, Analytics Engineering, Document Digitization & AI Integration
+**Entry-level:** Data Platform Architecture at multi-petabyte scale, Complex Distributed Stream Processing (Kafka/Flink)
+
+**Years of experience:** under 1 year full-time (Junior Data Engineer since Jan 2026) plus two summer 2025 internships. The posting's stated *overall* minimum bounds this score: fresher / 0-2 years / "1+ years including internships" = no cap; 1-3 years = stretch, cap at 65; 2+ years minimum = cap at 40; 3+ years = cap at 25. A role whose stated minimum is 2+ years is never a Strong or Good Fit on skills alone - say so in the verdict.
 
 ### 3. Behavioral/Culture Fit (0-100)
 Does the role and company culture match the behavioral profile?
@@ -91,10 +93,11 @@ Does the role and company culture match the behavioral profile?
 **Red flags to research:** Department disorganization, work dominated by maintenance over development, poor chemistry with leadership, culture mismatches. Check reviews, media coverage, LinkedIn connections, and network contacts for insider perspective.
 
 ### 4. Location & Logistics (Pass/Fail + Notes)
-- Within commute range: PASS
-- Remote with occasional office: PASS
-- Requires relocation: FAIL (deal-breaker)
-- Frequent international travel: FLAG (discuss with user)
+- Remote (India or Global): PASS
+- Hyderabad, Bengaluru, Andhra Pradesh, or major Indian tech hubs (Hybrid/On-site): PASS
+- Other Indian cities with relocation assistance: PASS (discuss with candidate)
+- Strict in-office with no relocation assistance outside target areas: FAIL
+- International roles offering visa sponsorship or remote work: PASS
 
 ### 5. Career Alignment & Motivation (0-100)
 Does this role advance career goals and contain tasks that energize?
@@ -107,19 +110,19 @@ Does this role advance career goals and contain tasks that energize?
 | 0-39 | Dead end or backwards step |
 
 **Career goals:**
-- [YOUR_CAREER_GOAL_1]
-- [YOUR_CAREER_GOAL_2]
-- [YOUR_CAREER_GOAL_3]
+- Master end-to-end modern data engineering architectures and scale high-throughput ingestion/analytics platforms
+- Deepen expertise in high-performance query engines (DuckDB, ClickHouse, PostgreSQL) and distributed data systems
+- Grow into a Senior Data / Backend Engineer leading data infrastructure initiatives
 
 **Motivation filter:** Evaluate not just whether you *can* do the tasks, but whether the tasks will *energize* you. Consider:
-- Tasks that energize: [YOUR_ENERGIZING_TASKS]
-- Tasks that drain: [YOUR_DRAINING_TASKS]
-- Non-task factors: leadership style, department culture, company values, degree of autonomy
+- Tasks that energize: Designing robust ETL/ELT pipelines, solving schema evolution & entity resolution puzzles, optimizing SQL queries, writing automated tests & contracts
+- Tasks that drain: Pure manual data entry/cleaning in spreadsheets without coding, repetitive manual file conversions, bureaucratic siloed operations
+- Non-task factors: engineering autonomy, clean code culture, supportive technical mentors
 
 **Life situation alignment:** Consider personal constraints:
-- **Security**: [YOUR_FINANCIAL_SITUATION_CONTEXT]
-- **Flexibility**: [YOUR_SCHEDULE_CONSTRAINTS]
-- **Professional development**: [YOUR_GROWTH_PRIORITIES]
+- **Security**: Available immediately to join full-time roles (Immediate Joiner)
+- **Flexibility**: Highly adaptable to remote, hybrid, or on-site in major tech centers
+- **Professional development**: High priority on learning best-in-class data engineering patterns, modern data stack, and cloud scale
 
 ### 6. Salary Benchmark (Optional)
 

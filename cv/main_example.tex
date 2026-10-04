@@ -1,62 +1,41 @@
-%% Example CV - [YOUR_NAME]
+%% Master Example CV - Zaheer Maseed
 %% Comprehensive overview of all competencies, experience, and achievements.
 %% Use as a master reference when tailoring role-specific CVs.
 %%
-%% SETUP: Run /setup to populate this with your actual information.
 %% Compile with: lualatex main_example.tex
-%% (pdflatex often fails on modern MiKTeX with fontawesome5 font-expansion errors.)
 
 \documentclass[11pt,a4paper,sans]{moderncv}
 \moderncvstyle{banking}
 \moderncvcolor{blue}
 
-% Force the name and section headings to render in moderncv blue (color1).
-% Default banking leaves them black: moderncvstylebanking.sty's \colorlet
-% copies (not aliases) the pre-scheme accent colour, so the name colours are
-% frozen before \moderncvcolor runs. Re-let them after. \namefont is the hook
-% every name-style macro routes through, so this also works on moderncv 2.3.1
-% (Debian/Ubuntu apt), which has no \firstnamestyle/\lastnamestyle at all.
-\renewcommand*{\namefont}{\fontsize{34}{36}\bfseries\upshape}
+% Force name and headings to moderncv blue (color1)
+\renewcommand*{\namefont}{\fontsize{30}{32}\bfseries\upshape}
 \colorlet{firstnamecolor}{color1}
 \colorlet{lastnamecolor}{color1}
 \colorlet{namecolor}{color1}
 \renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
 
 \usepackage[utf8]{inputenc}
-% pdflatex fallback only (the documented engine is lualatex, which skips this
-% branch). Without T1 font encoding pdflatex builds accented letters with
-% \accent, and the PDF text layer stores them decomposed - `e` + U+0300 rather
-% than U+00E8 - so an ATS keyword match on "Genève" fails while the page looks
-% right. moderncv 2.5 loads T1 itself under pdflatex; 2.3.1 (Debian/Ubuntu apt)
-% does not. \ifpdftex comes from iftex, which every moderncv version loads.
 \ifpdftex\usepackage[T1]{fontenc}\fi
-% moderncv loads hyperref itself in an \AtEndPreamble hook, so \hypersetup
-% must go in an \AtEndPreamble of our own: on moderncv < 2.4 a top-level
-% \usepackage{hyperref} clashes with the class's own
-% \RequirePackage[unicode]{hyperref}. From 2.4.0 the class passes its options
-% through \PassOptionsToPackage instead, which is what removes that clash.
+\usepackage{needspace}
+
 \AtEndPreamble{\hypersetup{
     colorlinks=true,
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=blue,
-    pdftitle={[YOUR_NAME] - CV},
-    % Keep pdfpagemode=UseNone: this block runs after moderncv's own
-    % \AtEndPreamble (moderncv.cls sets pdfpagemode there), so a FullScreen
-    % value here would win and open every CV in fullscreen presentation mode.
+    pdftitle={Zaheer Maseed - CV},
     pdfpagemode=UseNone,
 }}
-\usepackage[scale=0.80]{geometry}
+\usepackage[scale=0.82]{geometry}
 \usepackage{import}
 
-% personal data
-\name{[First]}{[Last]}
-% If you have no address to list, DELETE this whole line. \address{}{}{} fails
-% with "There's no line here to end" on every moderncv version.
-\address{[Your Address, City, Country]}{}{}
-\phone[mobile]{[+XX XXXXXXXXXX]}
-\email{[your.email@example.com]}
-\extrainfo{\href{[https://linkedin.com/in/your-profile]}{LinkedIn}, \href{[https://github.com/your-username]}{GitHub}}
+% Personal data
+\name{Zaheer}{Maseed}
+\address{Hyderabad, Telangana, India}{}{}
+\phone[mobile]{+91-6301052247}
+\email{jaheermaseed@gmail.com}
+\extrainfo{\href{https://linkedin.com/in/zaheer-maseed}{LinkedIn: zaheer-maseed} $|$ \href{https://github.com/zaheer037}{GitHub: zaheer037}}
 
 \begin{document}
 
@@ -66,8 +45,8 @@
 %     PROFILE STATEMENT
 % ============================================================
 
-\vspace{6pt}
-\small{[Write a 3-5 line profile statement tailored to the role you're applying for. Focus on what makes you uniquely qualified. Example: "Data scientist with a PhD in [field] and X years of industry experience. Combines deep domain expertise in [domain] with strong applied machine learning and Python development skills. Experienced in developing end-to-end ML pipelines, from data ingestion to stakeholder-facing dashboards."]}
+\vspace{-6pt}
+\small{Data Engineer with hands-on production experience building and operating resilient batch ingestion, entity resolution, and transformation pipelines for analytics platforms. Specializes in Python, SQL, PostgreSQL, Celery, DuckDB, and AWS, with a rigorous focus on data quality contracts, idempotent processing, and serverless analytical querying.}
 
 % ============================================================
 %     CORE COMPETENCIES
@@ -76,17 +55,11 @@
 \section{Core Competencies}
 \vspace{1pt}
 \begin{itemize}
-
-\item \textbf{[Skill Category 1]}: [Specific skills, frameworks, tools. Be concrete.]
-
-\item \textbf{[Skill Category 2]}: [Specific skills, frameworks, tools.]
-
-\item \textbf{[Skill Category 3]}: [Specific skills, frameworks, tools.]
-
-\item \textbf{[Skill Category 4]}: [Domain expertise, methods, approaches.]
-
-\item \textbf{[Skill Category 5]}: [Tools, platforms, software.]
-
+\item \textbf{Data Engineering \& Pipelines}: ETL/ELT architecture, distributed task queues, incremental \& idempotent loads, schema migrations, backfills, change detection, entity resolution, fuzzy matching.
+\item \textbf{Databases \& Storage}: PostgreSQL, DuckDB, MongoDB, Redis, Parquet, AWS S3.
+\item \textbf{Languages \& Frameworks}: Python (FastAPI, Celery, Pydantic, SQLAlchemy, Alembic, pytest), SQL, TypeScript, React, Shell Scripting (Bash).
+\item \textbf{Cloud \& Infrastructure}: AWS (Lambda, S3, EC2, CDK), Docker \& Docker Compose, RabbitMQ, Git, GitHub Actions, systemd, cron.
+\item \textbf{Quality \& Testing}: Automated schema validation gates, contract testing, reconciliation audits, pytest suites, data deduplication.
 \end{itemize}
 
 % ============================================================
@@ -94,35 +67,39 @@
 % ============================================================
 
 \section{Professional Experience}
-\vspace{3pt}
+\vspace{2pt}
 \begin{itemize}
 
-% --- Most Recent Role ---
-\item{\cventry{[YYYY-Present]}{[Job Title]}{[Company]}{[City, Country]}{}{\vspace{1pt}
+% --- AlonzoAI ---
+\needspace{5\baselineskip}
+\item{\cventry{Jan 2026 -- Present}{Junior Data Engineer}{AlonzoAI}{Hyderabad, India}{}{\vspace{1pt}
 \begin{itemize}
-    \item {[Achievement or responsibility 1 - be specific, use numbers where possible]}
-    \item {[Achievement or responsibility 2]}
-    \item {[Achievement or responsibility 3]}
-    \item {[Achievement or responsibility 4]}
+    \item \textbf{Sports Statistics Pipeline}: Extended asynchronous pipeline (Python, FastAPI, Celery, PostgreSQL, S3, DuckDB) ingesting third-party statistics API into object storage, loading raw JSON into PostgreSQL, and deriving game, season, and career aggregates; led rollout to six additional sports via partitioned configuration packages validated by automated contract tests.
+    \item Implemented event-level derivation and match-action configuration across all nine sports, added replace-on-load semantics to stop duplicate accumulation, and standardized upstream stat mappings to prevent schema drift.
+    \item Wrote backfill and audit tooling repairing historical source and attribution data across interim tables, reconciled cross-sport metadata to surface silent mapping gaps, and exported analytical tables to Parquet for downstream consumption.
+    \item \textbf{Bulk Data Ingestion Portal} (Primary Contributor): Built FastAPI + Celery + Redis service parsing bulk XML and roster/schedule CSV uploads into job-scoped staging tables, promoted to production by an atomic merge that keeps partially failed jobs recoverable.
+    \item Designed player and team entity-resolution layer (canonical identifier registry, tuned fuzzy roster matching with tiered fallback, and name/attribute standardization), eliminating duplicate identities across seasons and data sources.
+    \item Added pre-load data-quality gates, historical and post-season handling, manual-review and conflict-resolution workflows, admin console for targeted deletion and job re-trigger, non-blocking alerting, and pytest test coverage for aggregation and unpivot logic.
+    \item \textbf{Analytics \& Content Generation Platform}: Contributed to a serverless analytics backend (DuckDB on AWS Lambda, FastAPI, React) computing streak, ranking, and trend aggregates from templated SQL; mandated query-level traceability, benchmarked against gold datasets, and added deterministic pre-LLM filters cutting false-positive claims.
+    \item \textbf{Document Digitisation Pipeline}: Maintained production pipeline converting historical PDF records into structured tables via human annotation and LLM table extraction; bridged digitized records into ingestion portal with deduplicated joins and automatic job re-trigger.
 \end{itemize}}}
 
 \vspace{3pt}
 
-% --- Previous Role ---
-\item{\cventry{[YYYY-YYYY]}{[Job Title]}{[Company]}{[City, Country]}{}{\vspace{1pt}
+% --- Celebal Technologies ---
+\needspace{4\baselineskip}
+\item{\cventry{May 2025 -- July 2025}{Node.js Developer Intern}{Celebal Technologies}{}{}{\vspace{1pt}
 \begin{itemize}
-    \item {[Achievement or responsibility 1]}
-    \item {[Achievement or responsibility 2]}
-    \item {[Achievement or responsibility 3]}
+    \item Built a task management application on Node.js: REST endpoints for task CRUD, user authentication and persistence, verified with Postman across the request lifecycle.
 \end{itemize}}}
 
 \vspace{3pt}
 
-% --- Earlier Role ---
-\item{\cventry{[YYYY-YYYY]}{[Job Title]}{[Company]}{[City, Country]}{}{\vspace{1pt}
+% --- IIT Ropar ---
+\needspace{4\baselineskip}
+\item{\cventry{May 2025 -- July 2025}{Frontend Developer Intern}{Indian Institute of Technology, Ropar}{Remote / Ropar, India}{}{\vspace{1pt}
 \begin{itemize}
-    \item {[Achievement or responsibility 1]}
-    \item {[Achievement or responsibility 2]}
+    \item Selected for the NPTEL Summer Internship Program; built React and Tailwind CSS interfaces for an automated meeting transcription and real-time LLM poll-generation system.
 \end{itemize}}}
 
 \end{itemize}
@@ -135,16 +112,24 @@
 \vspace{1pt}
 \begin{itemize}
 
-\item{\cventry{[YYYY-YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
-Thesis: ``[Thesis Title].'' [Brief description of research focus.]
+\needspace{3\baselineskip}
+\item{\cventry{Aug 2022 -- June 2026}{B.E. in Computer Science and Engineering (AI)}{Chalapathi Institute of Engineering and Technology}{Guntur, India}{}{\vspace{1pt}
+\textbf{CGPA: 9.2/10} $|$ Key coursework: Machine Learning, Artificial Intelligence, Database Management Systems, Data Structures \& Algorithms, Distributed Systems.
 }}
 
-\vspace{3pt}
+\end{itemize}
 
-\item{\cventry{[YYYY-YYYY]}{[Degree] in [Field]}{[Institution]}{[City, Country]}{}{\vspace{1pt}
-[Brief description or key topics.]
-}}
+% ============================================================
+%     CERTIFICATIONS & AWARDS
+% ============================================================
 
+\section{Certifications \& Awards}
+\vspace{1pt}
+\begin{itemize}
+\item \textbf{HackerRank SQL (Intermediate)} (2025)
+\item \textbf{MongoDB Associate Developer} -- MongoDB University (2025)
+\item \textbf{Oracle Certified Foundations Associate} -- Oracle (2024)
+\item \textbf{1st Prize, App Builder Competition} -- HCET (2024)
 \end{itemize}
 
 % ============================================================
@@ -154,27 +139,7 @@ Thesis: ``[Thesis Title].'' [Brief description of research focus.]
 \section{Languages}
 \vspace{1pt}
 \begin{itemize}
-\item {[Language 1] (native), [Language 2] (fluent), [Language 3] (intermediate).}
-\end{itemize}
-
-% ============================================================
-%     PUBLICATIONS (optional)
-% ============================================================
-
-\section{Publications}
-\vspace{1pt}
-\begin{itemize}
-\item {[Author(s)] ([Year]). [Title]. [Journal/Conference]. \href{[DOI_URL]}{DOI link}}
-\end{itemize}
-
-% ============================================================
-%     HONORS AND AWARDS (optional)
-% ============================================================
-
-\section{Honors and Awards}
-\vspace{1pt}
-\begin{itemize}
-\item{\textbf{[Award Name]} -- [Event/Organization] ([Year]).}
+\item \textbf{English} (Professional working proficiency), \textbf{Telugu} (Native), \textbf{Hindi} (Conversational).
 \end{itemize}
 
 % ============================================================
@@ -184,7 +149,7 @@ Thesis: ``[Thesis Title].'' [Brief description of research focus.]
 \section{References}
 \vspace{1pt}
 \begin{itemize}
-\item{Available upon request.}
+\item Available upon request.
 \end{itemize}
 
 \end{document}

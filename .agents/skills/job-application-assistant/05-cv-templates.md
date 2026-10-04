@@ -59,7 +59,7 @@ Expected output: `Output written on main_<company>_<role>.pdf (2 pages, ...)`. A
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=blue,
-    pdftitle={[YOUR_NAME] - CV},
+    pdftitle={Zaheer Maseed - CV},
     % Keep pdfpagemode=UseNone: this block runs after moderncv's own
     % \AtEndPreamble (moderncv.cls sets pdfpagemode there), so a FullScreen
     % value here would win and open every CV in fullscreen presentation mode.
@@ -69,13 +69,13 @@ Expected output: `Output written on main_<company>_<role>.pdf (2 pages, ...)`. A
 \usepackage{import}
 
 % Personal data
-\name{[FIRST_NAME]}{[LAST_NAME]}
+\name{Zaheer}{Maseed}
 % If you have no address to list, DELETE this whole line. \address{}{}{} fails
 % with "There's no line here to end" on every moderncv version.
-\address{[YOUR_ADDRESS]}{}{}
-\phone[mobile]{[YOUR_PHONE]}
-\email{[YOUR_EMAIL]}
-\extrainfo{\href{[YOUR_LINKEDIN_URL]}{LinkedIn}, \href{[YOUR_GITHUB_URL]}{GitHub}}
+\address{Hyderabad, Telangana, India}{}{}
+\phone[mobile]{+91-6301052247}
+\email{jaheermaseed@gmail.com}
+\extrainfo{\href{https://linkedin.com/in/zaheer-maseed}{LinkedIn}, \href{https://github.com/zaheer037}{GitHub}}
 
 \begin{document}
 \makecvtitle
@@ -136,12 +136,17 @@ When the role sits outside your home domain, **lead with the domain-transfer arg
 
 **Create 2-3 profile statement templates for your main role types:**
 
-<!-- SETUP: These are populated based on your background -->
-**For [YOUR_PRIMARY_ROLE_TYPE] roles:**
-> [YOUR_PROFILE_STATEMENT_TEMPLATE_1]
+**For Data Engineering / Pipeline Engineering roles:**
+> Data Engineer specializing in robust batch ingestion, entity resolution, and transformation pipelines using Python, SQL, PostgreSQL, Celery, DuckDB, and AWS. Proven track record scaling multi-sport analytics feeds, enforcing pre-load data quality gates, and optimizing analytical tables for production downstream platforms.
 
-**For [YOUR_SECONDARY_ROLE_TYPE] roles:**
-> [YOUR_PROFILE_STATEMENT_TEMPLATE_2]
+**For Python Backend / Distributed Systems roles:**
+> Python Backend Engineer experienced in building high-concurrency asynchronous services, task queues, and APIs with FastAPI, Celery, Redis, and PostgreSQL. Strong focus on atomic operations, idempotency, data consistency contracts, and serverless compute integration.
+
+**For Data + Backend roles (pipelines plus the apps built on them):** *[From: documents/cv/resume_2026-09.tex]*
+> Data Engineer who has built production ingestion pipelines and the backend applications on top of them (an ingestion portal and an analytics platform) with Python, FastAPI, Celery and PostgreSQL.
+
+**For SaaS / analytics-platform Data Engineering roles:** *[Used for: starrez_data_engineer]* (unsupported claims "schema migration governance" and "high-performance analytical modeling for SaaS platforms" removed during extraction)
+> Data Engineer with hands-on production experience building and operating resilient batch ingestion, entity resolution, and data transformation pipelines. Specializes in Python, SQL, PostgreSQL, Celery, DuckDB, and AWS, with a rigorous focus on pre-load data-quality gates, contract tests, and analytics-ready aggregate tables.
 
 Statements labeled *[Used for: <company>_<role>]* were extracted from archived application drafts by `/setup` Path A. They are **phrasing references, never fact sources**: when drafting from one, every factual claim still comes from `01-candidate-profile.md` - a past tailored draft does not vouch for its own accuracy.
 

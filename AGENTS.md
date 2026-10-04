@@ -2,7 +2,7 @@
 framework_version: 2.0.0
 ---
 
-# Job Application Assistant for [YOUR_NAME]
+# Job Application Assistant for Zaheer Maseed
 
 <!-- SETUP: This file is populated by running /setup -->
 <!-- After running /setup, all [PLACEHOLDER] tokens will be replaced with your actual information -->
@@ -10,7 +10,7 @@ framework_version: 2.0.0
 ## Role
 
 This repo is a job application workspace. The agent acts as a career advisor and
-application assistant for [YOUR_NAME], helping with:
+application assistant for Zaheer Maseed, helping with:
 
 1. **Job fit evaluation** - Assess job postings against your profile (skills, experience, behavioral traits)
 2. **CV tailoring** - Adapt existing CV templates (LaTeX/moderncv) to target specific roles
@@ -79,76 +79,96 @@ your runtime's allowlist if you want to skip the prompts.
 <!-- This section is auto-populated by /setup. You can also fill it in manually. -->
 
 ### Identity
-- **Name:** [YOUR_NAME]
-- **Location:** [YOUR_CITY], [YOUR_COUNTRY] ([YOUR_COMMUTE_CONSTRAINTS])
+- **Name:** Zaheer Maseed
+- **Location:** Hyderabad, Telangana, India (Open to Remote, Bengaluru, Pan-India)
 - **Languages:**
   | Language | Level |
   |----------|-------|
-  | [LANGUAGE] | [LEVEL] |
+  | English | Professional |
+  | Telugu | Native |
+  | Hindi | Conversational |
   <!-- Every language you work in professionally, with your level (CEFR, "native," "professional
   working proficiency," whatever your CV/LinkedIn use - no need to force it into one scale). An
   undeclared language is a hard deal-breaker if a posting requires it; a declared language at a
   lower level than a posting wants is flagged for your own judgment, not auto-rejected. See
   04-job-evaluation.md's Language Gate. -->
-- **CV language:** [YOUR_CV_LANGUAGE] <!-- English unless your market expects otherwise; /setup asks -->
+- **CV language:** English <!-- English unless your market expects otherwise; /setup asks -->
 
-- **Status:** [YOUR_EMPLOYMENT_STATUS]
-- **LinkedIn headline:** "[YOUR_LINKEDIN_HEADLINE]"
+- **Status:** Junior Data Engineer at AlonzoAI (Immediate joiner)
+- **Experience:** under 1 year full-time (Junior Data Engineer since Jan 2026) plus two summer 2025 internships - target roles asking 0-2 years
+- **LinkedIn headline:** "Junior Data Engineer at AlonzoAI | Python, SQL, PostgreSQL, Celery, DuckDB, AWS"
 
 ### Education
 <!-- List your degrees, most recent first -->
-- **[DEGREE_LEVEL] in [FIELD]** ([YEAR_START]-[YEAR_END]) - [INSTITUTION]
-  - Thesis: "[THESIS_TITLE]"
-  - Topics: [KEY_TOPICS]
+- **B.E. in Computer Science and Engineering (AI)** (2022-2026) - Chalapathi Institute of Engineering and Technology
+  - CGPA: 9.2/10
+  - Topics: Machine Learning, Artificial Intelligence, Database Management Systems, Data Structures & Algorithms, Distributed Systems
 
 ### Professional Experience
 <!-- List your roles, most recent first -->
-- **[JOB_TITLE]** ([START_DATE] - [END_DATE]) - **[COMPANY]** ([LOCATION])
-  - [KEY_RESPONSIBILITY_1]
-  - [KEY_RESPONSIBILITY_2]
-  - [KEY_ACHIEVEMENT]
+- **Junior Data Engineer** (Jan 2026 - Present) - **AlonzoAI** (Hyderabad, India - office/hybrid)
+  - Extended asynchronous sports statistics pipeline across 9 sports (Python, FastAPI, Celery, PostgreSQL, S3, DuckDB) with partitioned configuration and contract tests.
+  - Built Bulk Data Ingestion Portal (FastAPI, Celery, Redis) with atomic merge semantics, fuzzy entity resolution, and pre-load data-quality gates.
+  - Contributed to serverless analytics & content generation backend on AWS Lambda and DuckDB; maintained LLM-assisted document digitization pipeline.
+  - Built the LLM claim-verification stage (claim decomposition, entity resolution, SQL checks against DuckDB, judging), benchmarked against a human-labelled gold dataset and gated in CI.
+  - Built operator-facing apps over the pipelines: FastAPI REST endpoints with typed schemas, JWT auth with RBAC, and upload -> validation -> approval workflows as background jobs.
+- **Node.js Developer Intern** (May 2025 - July 2025) - **Celebal Technologies** (held concurrently with the IIT Ropar internship)
+  - Built a task management REST API on Node.js (task CRUD, authentication, persistence), tested with Postman.
+- **Frontend Developer Intern** (May 2025 - July 2025) - **Indian Institute of Technology, Ropar** (Remote / Ropar, India)
+  - Selected for NPTEL Summer Internship Program; built React/Tailwind interfaces for automated meeting transcription and real-time LLM poll generation.
+
+### Independent Projects
+- **Line Review Workflow Platform** - event-driven review workflow with transactional outbox to Kafka, CQRS read side, Keycloak RBAC, hexagonal architecture (Python 3.12, FastAPI, PostgreSQL 16, React/TypeScript, Docker; 13 containers, 19 decision records). Private repo.
+- **Job-Posting Pipeline** - Common Crawl -> ATS boards -> dedupe -> LLM ranking against a resume; ~99% of a 7,000-posting run filtered deterministically before any model call. Private repo.
+- **Portfolio:** https://zaheer037.github.io/portfolio/
 
 ### Technical Skills
-- **Primary:** [YOUR_PRIMARY_SKILLS]
-- **Secondary:** [YOUR_SECONDARY_SKILLS]
-- **Domain:** [YOUR_DOMAIN_EXPERTISE]
-- **Software:** [YOUR_TOOLS_AND_SOFTWARE]
+- **Primary:** Python, SQL, PostgreSQL, DuckDB, Celery, FastAPI, ETL/ELT Design, Data Pipelines, AWS (S3, Lambda, EC2, CDK)
+- **Secondary:** Redis, Docker & Docker Compose, RabbitMQ, Pytest, React, TypeScript, Node.js, Shell Scripting, MongoDB, Parquet, JWT/RBAC, REST API design
+- **Project-level only:** Kafka (outbox relay), CQRS, Keycloak
+- **Domain:** Batch Ingestion, Entity Resolution, Distributed Task Queues, Data Quality Gating, Sports Analytics, Document Digitization, LLM Output Verification & Evaluation
+- **Software:** VS Code, Git, GitHub Actions, AWS Console, PostgreSQL CLI, DBeaver, Postman, Google Antigravity, Claude Code
 
 ### Certifications
 <!-- List relevant certifications with dates -->
-- **[CERTIFICATION_NAME]** - [HOURS]h - completed [DATE]
+- **HackerRank SQL (Intermediate)** - completed 2025
+- **MongoDB Associate Developer** - MongoDB University - completed 2025
+- **Certified Foundations Associate** - Oracle - completed 2024
 
 ### Publications
 <!-- List peer-reviewed publications, if any -->
-- [AUTHOR_LIST] ([YEAR]). [TITLE]. [JOURNAL].
+<!-- None listed -->
 
 ### Awards
 <!-- List relevant awards, hackathons, competitions -->
-- [AWARD_NAME] - [EVENT] ([YEAR])
+- **1st Prize, App Builder Competition** - HCET (2024)
+- **Team Lead, Alonzo Spark Internship** - AlonzoAI
+- **AlonzoAI AI Club** - evaluates emerging AI tools and shares working practices with colleagues
 
 ### Behavioral Profile
 <!-- Your behavioral assessment results (PI, DISC, Myers-Briggs, or self-assessment) -->
-- **[TRAIT_1]** - [DESCRIPTION]
-- **[TRAIT_2]** - [DESCRIPTION]
-- **Strengths:** [YOUR_STRENGTHS]
-- **Growth areas:** [YOUR_GROWTH_AREAS]
-- **Thrives in:** [YOUR_IDEAL_ENVIRONMENT]
+- **Autonomous Builder** - High ownership of end-to-end pipeline architecture from ingestion to analytics-ready tables
+- **Pragmatic Problem Solver** - Focuses on idempotency, data consistency, deduplication, and automated verification over ad-hoc fixes
+- **Strengths:** System design, end-to-end pipeline reliability, entity resolution, data quality gates, fast execution
+- **Growth areas:** Expanding into large-scale streaming pipelines (Kafka/Flink) and deep cloud-native data warehousing (Snowflake/BigQuery)
+- **Thrives in:** Fast-paced engineering environments, collaborative product/data teams, high-autonomy engineering culture
 
 ### What Excites You
 <!-- What motivates you professionally -->
-- [PASSION_1]
-- [PASSION_2]
+- Designing robust, scalable data ingestion and transformation pipelines with clean abstractions
+- Solving complex data modeling, fuzzy matching, and deduplication challenges
 
 ### Target Sectors
 <!-- Industries and companies you're targeting -->
-- [SECTOR_1]: [EXAMPLE_COMPANIES]
-- [SECTOR_2]: [EXAMPLE_COMPANIES]
+- **Data Platforms & Tech Startups:** AlonzoAI, Swiggy, Zepto, Razorpay, CRED, Postman, BrowserStack, high-growth SaaS
+- **Sports Tech & Media Analytics:** Sports analytics engines, live data platforms, fan engagement platforms
+- **Enterprise & Fintech Data Systems:** Scalable data infrastructure, analytics engineering, transactional and analytical data systems
 
 ### Deal-breakers
 <!-- Hard constraints on job search. Language requirements are handled separately and
 automatically from your Languages table above - don't duplicate them here. -->
-- [DEALBREAKER_1]
-- [DEALBREAKER_2]
+- Roles with pure manual/spreadsheet data entry and no engineering or coding
+- Rigid 5-day on-site roles far from target cities with no relocation or remote support
 
 ## Repo Structure
 - `cv/` - LaTeX CV variants (moderncv template, banking style)
